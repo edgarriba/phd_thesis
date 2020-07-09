@@ -1,0 +1,75 @@
+\section{Related Work}
+\label{sect:SotA}
+
+Vison based road scene understading through semantic labelling aims at understanding the contents of an image by providing semantic labels to every pixel. Recent work on semantic segmentation of street scenes is focused
+on training complex classifiers using large amount of data to model the large variability of situations due to the variability
+of the environment~\cite{HoiemPopUp:2005,HoiemICCV:2005,HoiemIJCV:2007,BaoIMAVI:2011,Make3dCVPR:2014,Koh07l1ls:2007}.
+
+
+
+In outdoor scenarios a common problem that affects the acquisition
+is related to global illumination conditions (dusk, season..).
+Therefore, what we propose is a fast unsupervised method that
+adapts target images to fit the domain in the original image under
+a global transformation..
+
+
+
+Current algorithms to recover the 3D scene layout are mainly based on an initial
+color segmentation step followed by a
+classifier~\cite{HoiemIJCV2007,SaxenaMake3d:2009}. However, there
+is a significant decrease in performance when these algorithms are
+applied to a different domain (\eg, on-board images,
+see~\fig{fig:roadSceneLayout}). A common method to improve their
+performance is retraining the classifier with label instances from
+each new domain. However, the collection of labeled instances is
+time consuming. Another approach consists of adapting the
+classifier kernels to the new domain exploiting domain adaptation
+methods~\cite{SaenkoKFD10,LixinPAMI2012,KulisSD11}.
+
+
+
+
+
+Some classifiers use preprocessing techniques (\eg z-score
+normalization or whitening) to alleviate and reduce the complexity
+of the data to be analyzed. What we propose in the next section is
+completely different. We assume a classifier has been trained
+under the best conditions available using a dataset that covers a
+large amount of different situations. Our approach aims at, in
+test time, add a preprocessing step to the test image to correct
+colors globally and make the image more suitable.
+
+
+
+
+
+The accuracy of any classifier is strongly related to the
+alignment between training and testing data. An ideal situation
+occurs when training and testing distributions are the same. A
+common way to approach this problem is using domain adaptation
+techniques~\cite{}. However, these methods require annotated data
+in both datasets (source and target) or at least, data from both
+datasets. In a continuously changing domain it is not always
+possible to have data representing the target domain.
+
+
+
+Domain adaptation as supervised, or semi-supervised/unsupervised
+methods. The former requires training (annotated) data from both
+domains target and source domain. The second approach aims at
+minimizing the distribution mismatch of labeled and unlabeled data
+between both domains. However, both types of domain adaptation
+approaches require prior knowledge of the target domain and make
+it unfeasible for outdoor scenes with continuously changing
+acquisition conditions. In contrast to these approaches what we
+propose is an unsupervised preprocessing step that aims at
+correcting global mismatch between the test image and a number of
+reference images from the original training set.
+
+
+Color transfer (or color mapping) is the process of altering the color of an image to make it more similar to another one (reference).  an image 
+
+Second, we should introduce color mapping / transfer techniques and state that usually is 1 to 1 and never used in applications with a clear measurament. Would be also interesting saying something about color constancy approaches and stating that the goal is diferent. Color constancy aims at recovering canonical iluminants. That is independent of the classifier.
+
+\cite{CT_ECCV:2012} \cite{CT_CVPR:2011} \cite{CT_CVPR:2014} \cite{faridul:2014}

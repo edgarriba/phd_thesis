@@ -1,0 +1,75 @@
+\section{Related Work}
+\label{sect:SotA}
+
+Image parsing for vision based road scene understanding aims at
+understanding the surroundings of a vehicle by providing semantic
+labels to every pixel of an image acquired using an on-board
+camera. Recent work on pixel-labelling is focused on training
+complex classifiers using large amount of data to model the large
+variability of situations due to the variability of the
+environment~\cite{HoiemIJCV:2007,Make3dCVPR:2014,BaoIMAVI:2011,Koh07l1ls:2007}.
+The accuracy of these classifiers is strongly related to the
+similarity in data distributions between training and testing
+sets. Ideally, the data distribution in the test set is included
+in the training set. However, this is not feasible when addressing
+a dynamic environment such as outdoor scenes acquired using a
+mobile platform. This problem can be approached using domain
+adaptation techniques~\cite{{SaenkoKFD10,LixinPAMI2012,KulisSD11}}
+either as supervised or semi-supervised/unsupervised forms. The
+former adapts the kernels of the classifier using training
+(annotated) data from both domains target and source domain. The
+latter aims at minimizing the distribution mismatch of labelled
+and unlabelled data between both domains. Therefore, both types of
+domain adaptation approaches require prior knowledge of the target
+domain are unfeasible for outdoor scenes with continuously
+changing acquisition conditions. In contrast to these approaches,
+what we propose is an unsupervised preprocessing step that aims at
+correcting global mismatch between the color statistics in test
+image and the training set. As main advantages, our approach is
+fast and does not require prior knowledge nor annotations of the
+target domain and therefore is specially suitable for highly
+dynamic environments.
+
+
+Color transfer (also referred as color mapping) is the process of
+altering the color of an image to impose color characteristics of
+another one (reference). This process is widely used in cinema or
+photo stitching applications where the same scene with the same
+contents are captured in slightly different instants and
+potentially with different
+cameras~\cite{CT_ECCV:2012},\cite{CT_CVPR:2011},\cite{CT_CVPR:2014}.
+Therefore, by using color mapping we can impose the color
+characteristics of one of the images (reference) to the rest. As a
+result, all the images share the same color
+statistics~\cite{faridul:2014}. A forerunner work in this area is
+the simple statistical analysis proposed in~\cite{Reinhard:2001}.
+This approach aims at transferring the color distribution between
+two images using the mean and standard deviation of each color
+plane. The main benefit of this algorithm is its low computational
+cost. However, the algorithm uses an one to one mapping and
+assumes both images refer to the same scene (same contents).
+Therefore the quality of the transformation depends on the images'
+similarity in composition. Different extensions have been proposed
+to consider more rich representations of the color distributions
+in both images (higher order moments) with the idea of more
+closely resemble both distributions. For instance, Hwang~\etal
+in~\cite{CT_CVPR:2014} proposed a method to preserve the gradients
+of the distribution. Although these methods provide better
+representations of the image contents than using only the mean and
+the standard deviation it is at the expense of a high
+computational cost and, therefore, they are not suitable for
+time-critical applications such as autonomous driving. In
+addition, all these methods are based on the same contents
+similarity assumption. What we propose in the next section is an
+algorithm that uses a one to many mapping to relax the contents
+similarity restriction. To this end, the algorithm creates a
+diversified set of reference images that will be used as a
+reference to transfer colors using first order statistics to keep
+a low computational cost.
+
+
+
+%
+%
+%
+% \cite{CT_ECCV:2012} \cite{CT_CVPR:2011} \cite{CT_CVPR:2014} \cite{faridul:2014}

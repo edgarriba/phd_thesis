@@ -1,0 +1,197 @@
+\section{Introduction}
+
+
+Vision-based road scene understanding is a key component for the
+future development of autonomous driving and driver assistance
+systems~\cite{DaimlerECCV:2014}. In these applications images are
+taken from a mobile camera in uncontrolled, cluttered
+environments. Therefore, the appearance of the objects in the
+image varies greatly depending on the daytime, weather,
+illumination and acquisition conditions. Algorithms must be robust
+to the highly dynamic nature of the environment. Furthermore,
+autonomous driving related applications are time-critical thus,
+algorithms require real time operation and restricted to low
+computational costs.
+
+
+
+During the last decade, a number of approaches have focused on
+providing accurate pixel-labelling~\cite{farabet-pami-13,Ladicky:2013,HoiemIJCV:2007,Make3dCVPR:2014,SaxenaMake3d:2009,ZhangECCV:2010}.
+These approaches exploit the continuously increasing data
+available to learn more comprehensive models able to deal with as
+many situations as possible. Unfortunately, dealing with road
+scenes in outdoor environments involves a large number of
+different situations and it is difficult to foresee a dataset
+large-enough (complete) to cover all possible conditions. Further,
+it is clearly unfeasible to collect and learn in a single model
+all possible situations. As a consequence, in practise,
+classifiers are trained on relatively small datasets covering a
+limited number of conditions. These methods have shown promising
+results when they are evaluated on the same dataset. However, as
+shown in~\fig{fig:header}, there is a significant decrease in
+performance when these algorithms are applied to real-world
+driving situations. A common approach to overcome this problem
+consists of retraining the classifier with labelled instances from
+each new domain (driving environment) which is not practical for
+high dynamic environments. More recent work deals with this
+problem adapting the kernels of the classifier to the new domain
+transferring the knowledge from the training dataset to the test
+image using domain adaptation
+techniques~\cite{SaenkoKFD10,LixinPAMI2012,KulisSD11}. However,
+all these approaches require prior knowledge of the target domain
+and the collection of labelled instances which is time consuming
+and impractical for time-critical autonomous driving applications
+
+
+In contrast to these methods, in this paper, we propose an
+efficient on-the-fly image transformation algorithm to globally
+adapt the test image to facilitate the task of the classifier and
+improve its performance. The algorithm does not require prior
+knowledge of the domain nor labelled information and can run in
+real-time. Therefore, it is specially suitable for high dynamic
+environments such a vehicle driving in real-world situations.
+
+
+The core of our proposal uses global color statistics to transfer colors between a set of reference images and the test image. Color transfer (mapping) tenchniques have been widely used to improve the quality of images of the same scene taken from slightly different point of views or 
+
+
+In contrast to other color transfer approaches that consider the image contents are known (and similar between both images) in an one to one mapping~\cite{Reinhard:2001,faridul:2014}, our algorithm relaxes this assumption to consider solely that the context of the image
+is known (road scene), and, introduces an one to $N$ mapping to
+broad the vast diversity behind outdoor appearances. 
+
+
+
+
+Our intention is having a set of $N$ reference images selected in an
+unsupervised manner (not overlapping with the training set -- or
+not necessarily) that form a diversified group of good images
+(\ie, one showing sunny conditions, the other showing bad weather,
+blooming, sky saturations and so on). Therefore, we aim at finding the transformation (cheap to be online) that transforms the test
+image into something close to one or a combination of reference
+images.
+
+in a similar manner to ~\cite{Reinhard:2001}. 
+
+
+Our algorithm builds upon the color transformation proposed
+in~\cite{Reinhard:2001}. The core of the algorithm aims at matching global
+color statistics between the test and a reference image. This
+algorithm consider one to one mapping and assume that the contents
+of the test and reference image are known. Our approach relaxes
+this assumption to consider solely that the context of the image
+is know (road scene), then, we introduce a 1 to $N$ mapping to
+broad the vast diversity behind outdoor appearances. The reason
+for having $N$ references relies on the idea that a single image
+may not represent the vast diversity behind outdoor appearances.
+Our intention is having a set of $N$ references selected in an
+unsupervised manner (not overlapping with the training set -- or
+not necessarily) that form a diversified group of good references
+(\ie, one showing sunny conditions, the other showing bad weather,
+blooming, sky saturations and so on). Therefore, we aim at finding
+the transformation (cheap to be online) that transforms the test
+image into something close to one or a combination of reference
+images.
+
+
+As a novelty, the performance is measured as the impact of this
+transformation in a real-world application (semantic
+segmentation).
+
+
+
+As a difference we work on multiple references that are selected
+automatically.
+
+
+We assume that the scene has a global lighting component that
+affects all the image as a whole (independently of shadows or the
+objects in the scene). This may be caused by different camera
+parameters or different daytime or weather conditions. We consider
+there is a transformation that can bring any image closer to a
+known acquisition condition (as those in the training set) and
+therefore,
+
+
+%
+%
+%Dealing with outdoor scenes involves learning a large diversity of
+%appearances and illumination conditions. During the last decade, a
+%number of approaches have exploited the continuously increasing
+%data available to learn more comprehensive models able to deal
+%with as many situations as possible. However, it is clearly
+%unfeasible to collect and learn in a single model all possible
+%situations. As a consequence, classifiers are trained on limited
+%datasets and their performance drops when the test image does not
+%follow the same distribution existing in the training set.
+
+
+%A potential solution to avoid retraining the classifiers consists
+%of transferring the knowledge from the training dataset to the
+%target one (target as the new dataset). However, these approaches
+%require having a set of labelled samples from the target domain.
+%This is not always possible specially in highly dynamic
+%environments (a vehicle in real-driving situations). It is not
+%feasible to have a set of target images properly labelled
+%representing all possible configurations.
+
+
+
+
+%~\cite{Brostow:2008}~\cite{Lookingbill:2007}~\cite{LadickyIJCV:2011}~\cite{Sturgess09}
+
+
+
+
+%
+%
+%\begin{figure}
+%\begin{center}
+%%\includegraphics[height=4cm]{./sections/figures/datasetB.eps}
+%\end{center}
+%\caption{Current algorithms to infer the 3D scene layout of an image (\eg, Hoiem~\etal\cite{HoiemIJCV2007}) are trained on general databases (\ie, LabelMe dataset) and their performance may degenerate when applied to unseen images on a different domain dataset (\eg, on-board road images). Our approach aims at preprocessing the test image to adapt the global appearance to the appearance of selected images in the training set.}
+%\end{figure}
+
+
+
+
+%Recently, a common approach consists of leveraging information in
+%datasets to learn better representations and improve the
+%performance of classifiers. Although these approaches have proved
+%to provide promising results, they are limited to images from the
+%same or similar datasets. The accuracy of these algorithms drops
+%when test images are taken under different conditions as those in
+%the training set. Unfortunately, dealing with road scenes in
+%outdoor environments involves a large number of different
+%situations and it is difficult to foresee a dataset large-enough
+%(complete) to cover all possible world-wide conditions. Even in
+%cases where a large dataset is available the algorithm must deal
+%with a large amount of data to obtain desired results.
+
+
+%
+%
+%Our approach is different and does not require prior information
+%regarding the target domain. We propose a preprocessing step to be
+%applied only during test time. Therefore, it is possible to deal
+%with any image without previous knowledge.
+
+
+
+
+
+
+
+
+
+%
+%
+%
+%
+%However, there is a significant decrease in performance when these
+%algorithms are applied to a different domain (e.g., on-board
+%images, see Fig. 1). A common method to improve their performance
+%is retraining the classifier with label instances from each new
+%domain. However, the collection of labelled instances is time
+%consuming. Another approach consists of adapting the classifier
+%kernels to the new domain exploiting domain adaptation methods
+%[22,6,13].

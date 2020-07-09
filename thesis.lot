@@ -1,0 +1,13 @@
+\select@language {english}
+\select@language {spanish}
+\select@language {english}
+\select@language {catalan}
+\select@language {english}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Quantitative evaluations of three semantic labelling frameworks on the KITTI dataset.}}{31}{table.caption.15}
+\contentsline {table}{\numberline {4.2}{\ignorespaces Quantitative evaluations of three semantic labelling frameworks on the CamVid dataset.}}{31}{table.caption.16}
+\contentsline {table}{\numberline {4.3}{\ignorespaces Influence of including temporal coherence on the CamVid dataset.}}{32}{table.caption.17}
+\addvspace {10\p@ }

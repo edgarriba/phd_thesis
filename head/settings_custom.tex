@@ -1,0 +1,243 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%		Thesis Settings
+%		Custom settings
+%
+%		2011
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%   Use this file for your own custom packages, command-definitions, etc...
+%
+\usepackage{enumitem}		% enumerate with letters
+\usepackage{colortbl}
+\usepackage{nccmath}
+\usepackage{bibentry}
+\usepackage{filecontents}
+\usepackage{epstopdf}
+\usepackage{ragged2e}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage[english]{babel}
+\usepackage{bm}  
+\usepackage{amsfonts}   
+\usepackage{verbatim}
+\usepackage{amssymb}
+\usepackage{graphics}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{cite}
+%\usepackage{fix2col}
+\usepackage{color}
+\usepackage{geometry}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{pifont}
+\usepackage{lscape}
+\usepackage{xspace}
+\usepackage{amsopn}
+\usepackage{mathtools}
+\usepackage{etextools}
+
+\usepackage{float}
+%%\usepackage{mathptmx}        % selects Times Roman as basic font
+%\usepackage{helvet}          % selects Helvetica as sans-serif font
+%\usepackage{courier}         % selects Courier as typewriter font
+\usepackage{type1cm}         % activate if the above 3 fonts are not available on your system
+\usepackage{makeidx}         % allows index generation
+%\usepackage{graphicx}        % standard LaTeX graphics tool when including figure files
+\usepackage{multicol}        % used for the two-column index
+\usepackage[bottom]{footmisc}% places footnotes at page bottom
+%\usepackage[hidelinks, breaklinks]{hyperref}
+%\usepackage{epsfig}
+%\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{mathtools}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{url}
+\usepackage{lipsum}
+\usepackage{dblfloatfix}
+\usepackage{setspace}
+\usepackage{tabulary}
+\usepackage{natbib}
+\usepackage{xstring}
+
+  \hyphenation{lo-ca-li-za-ti-on Lo-ca-li-za-ti-on}
+
+% the following lines are for creating a simplified TO-DO box. However since boites is not per default installed with all latex-distributions, we have removed this example again
+% if you want to use it and do not have "boites" installed, you can get it from here: http://www.ctan.org/tex-archive/macros/latex/contrib/boites
+%
+%\usepackage{boites,boites_exemples}
+%\newcommand{\todolist}[1]{\begin{boiteepaisseavecuntitre}{TO DO in this chapter} #1 \end{boiteepaisseavecuntitre}}  % creates a little box
+% %\newcommand{\todolist}[1]{}  % to be used when to do is not to be printed
+\newcommand{\UAB}{Universitat Autònoma de Barcelona}
+\newcommand{\CVC}{Centre de Visió per Computador}
+\newcommand{\DCC}{Dept. Ciències de la computació}
+\newcommand{\DCCCVC}{\DCC{} \& \CVC{}}
+\newcommand{\printer}{Ediciones Gráficas Rey, S.L.}
+\newcommand{\dedication}{A ellos}
+\newcommand{\sentence}{\textit{The difficulty lies, not in the new ideas,}\\ \textit{but in escaping from the old ones}\\ John Maynard Keynes (1883 - 1946)}
+\newcommand{\ISBN}{978-84-945373-1-8}
+
+\newtheorem{thm}{Theorem}%[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+%\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+%\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+\newcommand{\tx}[1]{#1}
+\newcommand{\ty}[1]{\tiny\bf #1}
+
+\newcommand{\colR}[1]{\textcolor{red}{\bf #1}}
+\newcommand{\colB}[1]{\textcolor{blue}{\bf #1}}
+
+\newcommand{\minisection}[1]{\vspace{0.04in} \noindent {\bf #1}\ \ }
+
+\newlength{\reducedwidth}
+\setlength{\reducedwidth}{\textwidth}
+\addtolength{\reducedwidth}{-\parindent}
+\addtolength{\reducedwidth}{-\parindent}
+\newenvironment{abstract}{\begin{center}\begin{minipage}{\reducedwidth}
+\hrulefill\vspace{3pt}\bf\\\small}{\par\hrulefill\\\end{minipage}\end{center}}
+
+
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+\DeclareMathOperator*{\argmax}{\arg\!\max}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+
+\definecolor{light-gray}{gray}{0.4}
+
+\def\ontop#1#2{\setbox0\hbox{#2}\copy0\llap{\raise\ht0\hbox{#1}}}
+
+\providecommand{\e}[2]{\ensuremath{{#1}\text{e}{#2}}}
+
+\newcommand\degrees[1]{#1\ensuremath{^\circ}}
+\graphicspath{{figures/}}
+\renewcommand{\baselinestretch}{1.0}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\newcommand{\mb}[1]{\mbox{$\underline{#1}$}}
+
+\newenvironment{proof}[1][Proof]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{example}[1][Example]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{remark}[1][Remark]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\newcommand{\qed}{\nobreak \ifvmode \relax \else
+      \ifdim\lastskip<1.5em \hskip-\lastskip
+      \hskip1.5em plus0em minus0.5em \fi \nobreak
+      \vrule height0.75em width0.5em depth0.25em \fi}
+
+
+\newcommand{\Tr}[0]{$\mathcal{T}_r$ }
+\newcommand{\mexp}[1]{$\textit{\bf exp}(#1)$ }
+\newcommand{\bt}[1]{\tilde{\bar{#1}}}
+
+\DeclareTextFontCommand{\emph}{\em}
+
+\def\eg{\emph{e.g.~}} \def\Eg{\emph{E.g.~}}
+\def\ie{\emph{i.e.}} \def\Ie{\emph{I.e.}}
+\def\cf{\emph{c.f.}} \def\Cf{\emph{C.f.}}
+\def\etc{\emph{etc.}} \def\vs{\emph{vs.}}
+\def\wrt{w.r.t.} \def\dof{d.o.f.}
+\def\etal{\emph{et al.}}
+
+\newcommand{\fig}[1]{Fig.~\ref{#1}}
+\newcommand{\Fig}[1]{Figure \ref{#1}}
+
+\newcommand{\sect}[1]{Sect. \ref{#1}}
+\newcommand{\Sect}[1]{Section \ref{#1}}
+\newcommand{\ch}[1]{Chapt. \ref{#1}}
+\newcommand{\Ch}[1]{Chapter \ref{#1}}
+\newcommand{\app}[1]{App. \ref{#1}}
+\newcommand{\tab}[1]{Table \ref{#1}}
+\newcommand{\alg}[1]{Alg. \ref{#1}}
+
+\newcommand{\subfig}[2]{Fig.~\ref{#1}#2}
+\newcommand{\subtab}[2]{Table~\ref{#1}#2}
+\newcommand{\points}{...,}
+\newcommand{\figs}[2]{Fig. \ref{#1} and \ref{#2}}
+%\newcommand{\eq}[1]{(\ref{#1})} %exigencias de ieee
+\newcommand{\iii}{{\cal I}}
+\newcommand{\bfp}{{\bf p}}
+\newcommand{\Algorithm}[1]{Algorithm~\ref{#1}}
+\newcommand{\mys}[1]{{\footnotesize{#1}}}
+\newcommand{\degree}{\ensuremath{^\circ}}
+\renewcommand{\labelenumii}{\theenumii}
+
+
+
+\definecolor{light-gray}{gray}{0.4}
+
+\def\ontop#1#2{\setbox0\hbox{#2}\copy0\llap{\raise\ht0\hbox{#1}}}
+
+\providecommand{\e}[2]{\ensuremath{{#1}\text{e}{#2}}}
+
+
+
+
+\def\mA{\mathcal{A}}
+\def\mB{\mathcal{B}}
+\def\mC{\mathcal{C}}
+\def\mG{\mathcal{G}}
+\def\mV{\mathcal{V}}
+\def\mE{\mathcal{E}}
+\def\mF{\mathcal{F}}
+\def\mH{\mathcal{H}}
+\def\mL{\mathcal{L}}
+\def\mM{\mathcal{M}}
+\def\mN{\mathcal{N}}
+\def\mP{\mathcal{P}}
+\def\mS{\mathcal{S}}
+\def\mT{\mathcal{T}}
+\def\mU{\mathcal{U}}
+\def\mW{\mathcal{W}}
+\def\mX{\mathcal{X}}
+\def\mY{\mathcal{Y}}
+\def\1n{\mathbf{1}_n}
+\def\0{\mathbf{0}}
+\def\1{\mathbf{1}}
+\def\I{{\bf I}}
+
+\newcommand{\UP}[1]{(\IfSubStr{#1}{-}{ \textcolor{red}{\bf #1} }{ \textcolor{blue}{\bf #1}})}
+\newcommand{\BL}[1]{\textcolor{blue}{\bf #1}}
+\newcommand{\OurNetwork}{CDNet}
+\newcommand{\SEthree}{\ensuremath{\mathrm{SE}(3)}\xspace}
+
+\makeatletter
+\newsavebox\saved@arstrutbox
+\newcommand*{\setarstrut}[1]{%
+  \noalign{%
+    \begingroup
+      \global\setbox\saved@arstrutbox\copy\@arstrutbox
+      #1%
+      \global\setbox\@arstrutbox\hbox{%
+        \vrule \@height\arraystretch\ht\strutbox
+               \@depth\arraystretch \dp\strutbox
+               \@width\z@
+      }%
+    \endgroup
+  }%
+}
+\newcommand*{\restorearstrut}{%
+  \noalign{%
+    \global\setbox\@arstrutbox\copy\saved@arstrutbox
+  }%
+}
+\makeatother
+
+\newcommand{\GR}[1]{\textcolor{green}{\bf #1}}

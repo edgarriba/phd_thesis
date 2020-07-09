@@ -1,0 +1,79 @@
+\section{Introduction}
+Vision-based urban scene understanding is a key component for the
+future development of autonomous driving and driver assistance
+systems~\cite{DaimlerECCV:2014}. In these applications images are
+taken from a mobile platform in uncontrolled, cluttered
+environments and the appearance of the objects greatly varies
+depending on elements such as daytime, weather, illumination and
+acquisition conditions. Algorithms must be robust to the highly
+dynamic nature of the environment and, due to the time constraints
+of the applications, they require to be computationally efficient
+to achieve real-time capabilities.
+
+In this paper, we focus on making semantic labelling algorithms
+---\ie, classifiers that provide a semantic label for each pixel
+of an image--- more tolerant to the aforementioned variations of
+the scene in an efficient unsupervised fashion.
+
+During the last decade, a number of approaches have focused on
+providing accurate semantic
+labelling~\cite{Ladicky:2013,HoiemIJCV:2007,Make3dCVPR:2014,ZhangECCV:2010}.
+These approaches exploit the continuously increasing available
+data to learn more comprehensive models, able to deal with as many
+situations as possible. Unfortunately, dealing with general urban
+scenes involves a large number of different situations, making
+difficult to foresee a dataset large-enough (\ie, complete) to
+cover all possible conditions. Furthermore, it is clearly
+infeasible to collect and learn in a single model all possible
+situations. As a consequence, in practise, classifiers are trained
+on relatively small datasets covering a limited number of
+conditions and provide promising results when they are evaluated
+on data from a similar distribution. However, as shown
+in~\fig{fig:header}(Top-row), there is a significant decrease in
+performance when these algorithms are applied to images coming
+from a different distribution. A common approach to solve this
+problem consists of retraining the classifier with labelled
+instances from each new environment (domain). More recent works
+deal with this problem adapting the classifier to each new domain
+transferring the knowledge by domain adaptation
+techniques~\cite{XRV2013, Vazquez:2013b,LixinPAMI2012}. However,
+these approaches require prior knowledge of the target domain and
+the collection of labelled instances which is time consuming and
+impractical for autonomous driving applications, where the domain
+changes dynamically over time.
+
+
+In contrast to these methods, here, we propose an efficient
+unsupervised image transformation method following a global color
+transfer strategy. In this way, test images are dynamically
+transformed according to a set of reference images by imposing
+their characteristic colors. This operation is applied following a
+novel one-to-many scheme, which generalizes classical methods such
+as Reinhard~\cite{Reinhard:2001}. The proposed scheme overcomes
+the limitation of classical techniques when applied to dynamic
+environments, since the quality of the results depends on how
+similar are the images. In contrast, our algorithm only assumes
+that the context of the image is known (urban scene) and, thanks
+to the one-to-many transformation we can model the diversity of
+the reference images (\ie, one showing sunny conditions, the other
+showing bad weather, blooming, sky saturations and so on), to
+increase the chances of having a reference and a test image with
+similar distributions. In addition, our approach can naturally
+deal with the temporal consistency of video streams to perform a
+coherent transformation. All these elements serve to improve the
+performance on the side of the  semantic labelling method,
+avoiding a cumbersome retraining stage. Our algorithm does not
+require prior knowledge of the domain nor labelled information and
+is, therefore, very suitable for vehicle driving scenarios.
+
+
+To demonstrate the benefits of our approach we conduct experiments
+on three different semantic labelling frameworks (\ie,
+Hoiem~\cite{HoiemIJCV:2007}, recent work by
+Yang~\cite{Make3dCVPR:2014} and Darwin~\cite{DARWIN}), on two
+publicly available datasets KITTI~\cite{Geiger2013IJRR} and
+CamVid~\cite{CamVidBBDD:PRL2008}, along with a set challenging
+images collected from the Internet. Our extensive set of
+experiments shows the effectiveness of including our unsupervised
+image transformation approach as a preprocessing step of semantic
+labelling at a negligible computational cost.
