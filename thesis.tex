@@ -10,8 +10,8 @@
 \input{head/settings_epfl_template.tex}
 \input{head/settings_custom.tex}  % place your custom packages, etc... in this file!
 
-\title{Visual Scene Understanding for Autonomous Vehicles: Understanding Where and What}
-\author{\textbf{Germán Ros Sánchez}}
+\title{Geometric Computer Vision Techniques for Scene Reconstruction}
+\author{\textbf{Edgar Riba Pi}}
 \date{\today}
 
 
@@ -25,8 +25,8 @@
 \input{head/dedication}
 \setcounter{page}{0}
 
-\input{main/0_pre/ack}
-\input{main/0_pre/abstracts}
+\input{main/pre/ack}
+\input{main/pre/abstracts}
 
 \tableofcontents
 \cleardoublepage
@@ -49,28 +49,12 @@
 %%%%% MAIN: The chapters of the thesis
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mainmatter
-\input{main/2_introduction/introduction}
-  
-\def\partimagex{images/part1.eps}
-\def\partspacex{-10}
-\def\partcapx{Localization and trajectory estimation on a synthetic scene.}
-\part{Where am I on the Scene?}
-\input{main/3_chapter00/chapter00}
-
-
-\def\partimagex{images/part2.eps}
-\def\partspacex{-50}
-\def\partcapx{Semantic segmentation of an outdoor image.}
-\part{What is on the Scene?} 
-\input{main/4_chapter00/chapter00}
-\input{main/4_chapter01/chapter01}
-
-\def\partimagex{images/part3.eps}
-\def\partspacex{-90}
-\def\partcapx{Pictorial representation of the SYNTHIA virtual world.}
-\part{Clausula}
-\input{main/5_end/end}
-
+\input{main/introduction/introduction}
+\input{main/chapter02/chapter02}
+\input{main/chapter03/chapter03}
+\input{main/chapter04/chapter04}
+\input{main/chapter05/chapter05}
+\input{main/end/end}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% TAIL: Bibliography, Appendix, CV
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
