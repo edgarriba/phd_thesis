@@ -311,6 +311,151 @@ RandomVerticalFlip & Kornia &   \bfseries0.63 &   0.71 &   0.62 &  \bfseries 0.5
 }
 \end{table}
 
+\subsection{Differentiable Data Augmentation}
+\label{section:use_cases:differentiable computer vision}
+
+\subsubsection{Introduction}
+Data augmentation (DA) is a widely used technique to increase the variance of a dataset by applying random transformations to data examples during the training stage of a learning system. Generally, image augmentations can be divided in two groups: color space transformations that modify pixel intensity values (e.g. brightness, contrast adjustment) and geometric transformations that change the spatial locations of pixels  (e.g. rotation, flipping, affine transformations). Whilst training a neural network, DA is an important ingredient for regularization that alleviates overfitting problems~\cite{deeplearningbook2016}. An inherent limitation of most current augmentation frameworks is that they mostly rely on non-differentiable functions executed outside the computation graphs.
+
+In order to optimize the augmentation parameters (e.g. degree of rotation) by a specific objective function, differentiable data augmentation (DDA) is used. Earlier works like spatial Transformers \cite{SpatialTransformers2015} formulated spatial image transformations in a differentiable manner, allowing backpropagation through pixel coordinates by using weighted average of the pixel intensities. Recent works proposed to use DDA to improve GAN's training~\citep{zhao2020differentiable}, and to optimize augmentation policies~\citep{hataya2020meta, hataya2019faster}.
+ 
+In this work, we present Kornia DDA to help resarchers and professionals to quickly integrate efficient differentiable augmentation pipelines into their works. Our framework is based on Kornia~\citep{eriba2019kornia, eriba2020kornia}, which is an open-sourced computer vision library inspired by OpenCV~\citep{opencv} and designed to solve generic computer vision problems. Additionally, Kornia re-implemented classical Computer Vision algorithms from scratch in a differentiable manner and built on top of PyTorch~\citep{paszke2017automatic} to make use of the auto-differentiation engine to compute the gradients for complex operations. This paper shows: 1) the usability-centric API design, 2) a benchmark with a couple of state of the art libraries, and 3) practical usage examples.
+
+\begin{figure}
+  \begin{minipage}[b]{0.7\linewidth}
+    \centering
+        \begin{tabular}{lll}
+        \toprule
+        \multicolumn{3}{c}{\textbf{Color Space Augmentations}}\\
+        \midrule
+        Normalize& Denormalize & ColorJitter\\
+        Solarize & Equalize & Sharpness \\
+        MixUp &  CutMix  & Grayscale \\
+        \midrule
+        \multicolumn{3}{c}{\textbf{2D Spatial Augmentations (on 4d tensor)}}\\
+        \midrule
+        CenterCrop & Affine & ResizedCrop \\
+        Perspective & HorizontalFlip & VerticalFlip \\
+        Erasing & Rotation & Crop \\
+        \midrule
+        \multicolumn{3}{c}{\textbf{3D Volumetric Augmentations (on 5d tensor)}}\\
+        \midrule
+        CenterCrop3D & Crop3D & Perspective3D\\
+        HorizontalFlip3D & VerticalFlip3D & DepthicalFlip3D \\
+        \bottomrule
+        \end{tabular}
+    \par\vspace{0pt}
+  \end{minipage}
+  \begin{minipage}[b]{0.25\linewidth}
+    \centering
+    \includegraphics[width=.8\linewidth, right]{main/chapter03/data/dda/imgs/dda.png}
+    \par\vspace{0pt}
+  \end{minipage}%
+\caption{{\bf Left}: Subset of supported differentiable augmentations under Kornia 0.4.1. {\bf Right}: Our proposed scheme to represent differentiable data augmentation showing the gradients flow of the different transformations go forth and back throw the augmentations pipeline. Black arrow represents the forward pass while orange arrow represents backpropagation.}
+\label{fig:test}
+\end{figure}
+
+\subsubsection{PyTorch-Oriented Design}
+
+% \edgar{The Kornia data augmentation API has been designed having the PyTorch philosophy \cite{paszke2017automatic} in mind and following the same principle designs as defining neural networks in modules.}
+Kornia DDA APIs are designed following PyTorch's philosophy \cite{paszke2017automatic}, using the same logic to define neural networks as modules in order to construct complex algorithms based on differentiable building blocks.
+% Hence, each operation could perform automatic differentiation apart from the input transformation. 
+In most existing frameworks, the DA process is a non-differentiable pre-processing step outside the computation graphs. 
+% However, \edgar{in order to take the advantage of the differentiability property,} 
+While in \mintinline{python}|kornia.augmentation|, differentiable in-graph random transformations are are incorporated into the computation graph. 
+
+% \francescrmk{what does "apat from the input transformation" mean?}
+
+% Hence, automatic differ
+
+\subsubsection{Augmentation as a Layer}
+
+Our framework introduces augmentation layers which can be seamlessly integrated with neural network layers (e.g. Conv2D, MaxPool2D). This approach offers the following advantages:
+% \francescrmk{clearly describe the parameters of the data augmentation you can control and differentiate.}
+
+\begin{itemize}[leftmargin=*]
+    \item {\bf Automatic differentiation}. Gradients of augmentation layers could be computed whilst forward pass by taking the advantage of PyTorch autograd engine.
+    \item {\bf On-device computations}. DA can be moved to any computational resource available, namely CPUs, GPUs or even TPUs. Moreover, Kornia DDA is optimized for batched data processing which can be highly accelerated by GPU and TPU. 
+    \item {\bf Higher reproducibilities}. Augmentation randomness is controlled by
+    PyTorch random state for the reproducible DA under the same random seed.
+    In addition, DA pipeline can be serialized along with any neural networks by simply \mintinline{python}|torch.save| and \mintinline{python}|torch.load|.
+    
+    % the exact model architecture and randomness is required.
+    % In addition, the augmentation randomness is fully controlled by the PyTorch random state to guarantee the exact augmentation performed under the same random seed.
+    % This implementation eases the CPU burden by moving the transformation computations into different GPUs, especially in data parallel settings.
+\end{itemize}
+
+
+\begin{tcolorbox}[every float=\centering, drop shadow, title=Example 1: DDA Pipeline]
+    \label{fig:examples:pipeline}
+    % \includegraphics[width=1.\linewidth]{data/imgs/mix_augmentation.png}
+    % Example showing how to apply MixUp and CutMix augmentations to images in Kornia. left: MixUp augmentation. Right: CutMix augmentation.
+    \inputminted[python3, baselinestretch=1., style=vs, fontfamily=courier, fontsize=\footnotesize, funcnamehighlighting=true]{python}{main/chapter03/data/dda/code/exp1_da_pip.py}
+    % \vspace{1mm}
+    \tcbsubtitle{On-device Computations}
+    \inputminted[python3, baselinestretch=1., style=vs, fontfamily=courier, fontsize=\footnotesize, funcnamehighlighting=true]{python}{main/chapter03/data/dda/code/exp1_on_device.py}
+    % \vspace{1mm}
+    \tcbsubtitle{Save and Load}
+    \inputminted[python3, baselinestretch=1., style=vs, fontfamily=courier, fontsize=\footnotesize, funcnamehighlighting=true]{python}{main/chapter03/data/dda/code/exp1_sl.py}
+\end{tcolorbox}
+
+\subsubsection{PyTorch-Backended Optimization} \label{optimization}
+% As discussed, DDA is getting popular across different computer vision areas.
+Our framework provides an easy and intuitive solution to backpropagate the gradients through augmentation layers using the native PyTorch workflow. In any augmentations, \mintinline{python}|kornia.augmentation| takes \mintinline{python}|nn.Parameter| as differentiable parameters while \mintinline{python}|torch.tensor| as static parameters. The following example shows how to optimize the differentiable parameters (including brightness, contrast, saturation) of \mintinline{python}|kornia.augmentation.ColorJitter| and backpropagate the gradients based on the computed error from a loss function.
+
+\begin{tcolorbox}[every float=\centering, drop shadow, title=Example 2: Optimizable DA]
+    \label{fig:examples:optimize}
+    \inputminted[python3, baselinestretch=1., style=vs, fontfamily=courier, fontsize=\footnotesize, funcnamehighlighting=true]{python}{main/chapter03/data/dda/code/exp2_color_jitter_differentiable.py}
+    \tcbsubtitle{Updated Image}
+    % \inputminted[python3, baselinestretch=1., style=vs, fontfamily=courier, fontsize=\footnotesize, funcnamehighlighting=true]{python}{data/code/exp2_color_jitter_img_out.py}
+    \includegraphics[width=1.\linewidth]{main/chapter03/data/dda/imgs/exp2_demo.png}
+    From left to right: the original input, augmented image and gradient-updated image.
+    \tcbsubtitle{Updated Parameters}
+    \inputminted[python3, baselinestretch=1., style=vs, fontfamily=courier, fontsize=\footnotesize, funcnamehighlighting=true]{python}{main/chapter03/data/dda/code/exp2_color_jitter_out.py}
+\end{tcolorbox}
+
+\subsubsection{Benchmarks}
+
+Existing libraries such as TorchVision (based on PIL) and Albumentations~\cite{info11020125} (based on OpenCV) are optimized for CPU processing taking the advantage of multi-threading. However, our framework is optimized for GPU batch processing that runs in a synchronous manner as a precedent module for neural networks. The different design choices among those libraries determined the difference in the performance under different circumstances (e.g. hardware, batch sizes, image sizes). As we state in \autoref{tab:benchmark}, TorchVision/Albumentations show a better performance when lower computational resources are required (e.g. small image size, less images), while Kornia DDA gives a better performance when there is a CPU overhead. For the performance experiments, we used Intel Xeon E5-2698 v4 2.2 GHz (20-Core) and 4 Nvidia Tesla V100 GPUs. The code for the experiments will be publicly provided to compare against other hardware.
+
+\begin{table}[htb]
+\centering
+\small
+% we used Intel Xeon E5-2698 v4 2.2 GHz (20-Core) and 4 Nvidia Tesla V100 GPUs
+\begin{tabular}{cccc}
+\toprule
+ \makecell{\\Num. GPUs for}  & \multicolumn{3}{c}{\makecell{Comparison Among Different Image Sizes\\(Kornia / Albumentations / TorchVision)}}\\
+% \midrule
+Data Parallelism &  32x32 &  224x224 &  512x512 \\
+\midrule
+1 &  14.28 / {\bf 12.07} / 12.33 &  14.23 / {\bf 12.10} / 12.48 &  14.22 / {\bf 12.08} / 12.77 \\
+\midrule
+2 &  15.99 / 16.47 / {\bf 14.06} &  {\bf 12.85} / 12.93 / 13.91 &  {\bf 12.93} / 13.34 / 14.03\\
+\midrule
+3 &   16.61 / 17.88 / {\bf 15.21} &  {\bf 12.97} / 14.46 / 15.00 &   {\bf 13.08} / 13.96 / 15.36 \\
+\midrule
+4 &   16.87 / 18.99 / {\bf 15.66}  &  {\bf 13.32} / 15.38 / 15.94  &    {\bf 13.44} / 15.84 / 16.12\\
+\bottomrule
+\end{tabular}
+
+\caption{\label{tab:benchmark} {\bf Speed benchmark among DA libraries.} The results are computed as the time cost (seconds) of training 1 epoch of ResNet18 using 2560 random generated faked data. Specifically, DA methods compared are RandomAffine, ColorJitter and Normalize. Batch size is 512 in all the experiments. The add-on GPU memory cost from \mintinline{python}|kornia.augmentation| is negligible. }
+\end{table}
+
+\subsubsection{Learning local feature orientation estimator with Kornia}
+An approach to learn a local feature detector is by using differentiable random spatial transformations~\cite{AffNet2018}, that is, spatial augmentation. The learned model has to predict the local patch geometry, which is then described by a local descriptor and the matching-related loss is minimized, as shown in Figure~\ref{fig:affnet-training-scheme}. Authors' implementation of all related function based on PyTorch~\cite{paszke2017automatic} \textit{grid\_sample} function takes around 600 lines of code. The same functionality can be implemented with Kornia and \mintinline{python}|kornia.augmentation| using 30 lines of code including all necessary imports. 
+
+\begin{figure*}[htb]%---------------------------------------
+\centering
+\includegraphics[width=0.95\linewidth]{main/chapter03/data/dda/imgs/affnet_tr_scheme2.PNG}
+\caption{AffNet local feature shape and orientation estimation training training, image courtesy~\cite{AffNet2018}. We re-implemented differentiable image transformations, $T_i, \dot{T}_i$, and $A_i, \dot{A}_i$ using \mintinline{python}|kornia.augmentation| functions, reducing relevant code line counts by order of magnitude.}
+\label{fig:affnet-training-scheme}
+\end{figure*}
+
+\subsubsection{Optimizable Data Augmentation with Kornia}
+
+Designing a proper combination of DA operations is a complicated task, which often requires the specific domain knowledge. On top of the Kornia DDA module, Faster AutoAugment \cite{hataya2019faster} is implemented with an aim of learning the best augmentation policies by gradient optimization methods. Moreover, MADAO \cite{hataya2019faster} (Meta Approach to Data Augmentation Optimization) is also implemented on top of Kornia which could optimize both deep learning models and DA policies simultaneously, which effectively improved the classification performance using gradient descent.
+
+
 \subsection{End to end Low-dimensional embedding}
 \label{section:use_cases:image_reconstruction}
 
