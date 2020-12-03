@@ -2,30 +2,15 @@
 
 \section{Feature description}
 
-\subsection{Motivation}
-It has recently been demonstrated that local feature descriptors
-based on convolutional neural networks (CNN) can significantly
-improve the matching performance.  Previous work on learning such
-descriptors has focused on exploiting pairs of positive and negative
-patches to learn discriminative CNN representations. In this work,
-we propose to utilize triplets of training samples, together with
-in-triplet mining of hard negatives. We show that our method
-achieves state of the art results, without the computational
-overhead typically associated with mining of negatives and with
-lower complexity of the network architecture.  We compare our
-approach to recently introduced convolutional local feature
-descriptors, and demonstrate the advantages of the proposed methods
-in terms of performance and speed.  We also examine different loss
-functions associated with triplets.
+In the previous section we described the process to detect interesting points in the image using classical and CNN based algorithms, reviewed the state of the art and proposed a new method that uses CNN to improve the preexisting methods. Thus, in order to perform the 3d reconstruction of the scene using local features, as we have discussed during the introduction of this thesis the next step of the pipeline consists in describing the detected points. As seen in figure~\ref{tfeat_fig:feature_description_example} the classical approach for describing local regions is to extract small image patches and compute a descriptor based on the properties obtained from the detection algorithm such as the location, size or orientation. There is a wide variety of methods to compute descriptors from the image patches using classical methods such as the very well known SIFT~\cite{SIFT} that bases on computing histograms of gradients and has inspired a whole generation of researchers in this field.
+
+However, it has recently been demonstrated that local feature descriptors based on convolutional neural networks (CNN) can significantly improve the matching performance.  Previous work on learning such descriptors has focused on exploiting pairs of positive and negative patches to learn discriminative CNN representations. In this thesis, we propose a new method that utilizes triplets of training samples, together with in-triplet mining of hard negatives. We show that the method achieves state of the art results, without the computational overhead typically associated with mining of negatives and with lower complexity of the network architecture.  The approach is compared to recently introduced convolutional local feature descriptors, and demonstrate the advantages of the proposed methods in terms of performance and speed.  In addition, different loss functions associated with triplets are examined using basic geometric constraints.
 
 %%%%%%%%% INTRO
 \subsection{Introduction}
 
-Finding correspondences between images via local descriptors is one of
-the most extensively studied problems in computer vision due to the
-wide range of applications. The field has witnessed several
-breakthroughs in this area such as
-SIFT~\cite{Lowe:2004:DIF:993451.996342}, invariant region
+Finding correspondences between images via local descriptors is one of the most extensively studied problems in computer vision due to the wide range of applications. The field has witnessed several
+breakthroughs in this area such as SIFT~\cite{Lowe:2004:DIF:993451.996342}, invariant region
 detectors~\cite{mikolajczykIJCV2004}, fast binary
 descriptors~\cite{Calonder:2010:BBR:1888089.1888148}, optimised
 descriptor parameters \cite{WHB09,simonyan2014learning} which have
@@ -45,16 +30,25 @@ the use of triplets of samples instead of solely focusing on pairs
 Different loss functions are proposed in these works, but a systematic
 study of their characteristics is yet to be done. In addition, these
 works are focused on more general embeddings (e.g. product similarity,
-3D description of objects, MNIST classification). In this work, we
-investigate the use of triplets in learning local feature descriptors
-with convolutional neural networks. Other contributions include: 1) we
-examine different different loss functions for triplet based-learning,
-2) we investigate the performance of these methods in terms of patch
-matching, and patch pairs classification in widely used benchmarks, 3)
-we show that in-triplet hard negative mining can lead to improved
-results, 4) we demonstrate that excellent descriptor performance can
-be obtained with a shallow network thus avoiding computationally
-complex architectures and expensive mini-batch hard negative mining.
+3D description of objects, MNIST classification).\\
+
+\noindent In this section, we investigate the use of triplets in learning local feature descriptors with convolutional neural networks including the following contributions:
+
+\begin{enumerate}
+    \item we examine different different loss functions for triplet based-learning.
+    \item we investigate the performance of these methods in terms of patch matching, and patch pairs classification in widely used benchmarks.
+    \item we show that in-triplet hard negative mining can lead to improved results.
+    \item we demonstrate that excellent descriptor performance can be obtained with a shallow network thus avoiding computationally complex architectures and expensive mini-batch hard negative mining.
+\end{enumerate}
+
+\begin{figure}
+    \centering
+    \subfloat[\centering]{{\includegraphics[width=5cm]{main/chapter02/figures/sift_basic_0.jpg} }}
+    \qquad
+    \subfloat[\centering]{{\includegraphics[width=5cm]{main/chapter02/figures/sift_basic_3.jpg} }}
+    \caption[Local feature description using VLFeat]{\textbf{Local feature description using VLFeat.} Example showing the result of a local features detection algorithm using the VLFeat library~\cite{vedaldi08vlfeat} with the SIFT~\cite{SIFT} descriptor. \textbf{Left:} the original RGB image. \textbf{Right:} the image in grayscale containing the detected keypoints including the region from where descriptor will be extracted according to the keypoint size and orientation.}
+    \label{tfeat_fig:feature_description_example}
+\end{figure}
 
 \subsection{Related work}
 The design and implementation of local descriptors has undergone a
@@ -85,9 +79,7 @@ descriptors.  Interest in the field started from results shown in
 deep network trained on ImageNet \cite{ILSVRC15} can outperform
 SIFT. This was a significant result, since the convolutional features
 from ImageNet were not specifically learnt for such local
-representations.
-
-Learning a CNN from local patches extracted from
+representations. Learning a CNN from local patches extracted from
 local features only, based on a siamese architecture with hinge
 contrastive loss \cite{1640964} was demonstrated in
 \cite{ZagoruykoCVPR2015,simo2015deepdesc,Han_2015_CVPR} to significantly
@@ -104,9 +96,7 @@ distance layer. This allows the extracted descriptors to be used in
 traditional pipelines. However, the experiments from
 \cite{ZagoruykoCVPR2015} show that metric learning performs better
 than generic $L2$ matching. In our experiments, we also use features
-from CNNs without any metric learning layer.
-
-Another important observation from \cite{ZagoruykoCVPR2015} is that
+from CNNs without any metric learning layer. Another important observation from \cite{ZagoruykoCVPR2015} is that
 multiscale architectures perform better than the single scale ones. However,
 this is not unique to the CNNs, since previous works have
 shown that aggregating descriptors from multiple scales, improves the
@@ -115,11 +105,17 @@ since these are the building blocks for multiscale descriptors, and
 improving them, will improve the final multiscale results as argued
 by the DSP theory from \cite{DBLP:journals/corr/DongS14}.
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{main/chapter02/images/patches_hard.png}
+    \caption[Extracted patches from an image]{\textbf{Extracted patches from an image.} Example showing a set of image patches obtained from different keypoints of the HPatches dataset~\cite{HPatches}.}
+\label{tfeat_fig:patches}
+\end{figure}
+
 \subsection{Learning patch descriptors}
 
-In this section, we first discuss the two most commonly used loss functions when learning with triplets, and we then investigate their characteristics.  A patch descriptor is considered as  a non-linear encoding resulting from a final layer of a convolutional neural network. Let
-$\boldsymbol x \in \mathbb{R}^{n \times n}$ represent the patch given
-as input to the network, and $f(\boldsymbol x) \in \mathbb{R}^{D}$
+In this section, we first discuss the two most commonly used loss functions when learning with triplets, and we then investigate their characteristics.  A patch descriptor is considered as  a non-linear encoding resulting from a final layer of a convolutional neural network. Let$\boldsymbol x \in \mathbb{R}^{n \times n}$ represent the patch given
+as input to the network (see figure~\ref{tfeat_fig:patches}) and $f(\boldsymbol x) \in \mathbb{R}^{D}$
 represent the $D$ features given as output from the network.
 For all of the methods below, the goal is to learn the embedding
 $f(\boldsymbol x)$ s.t. $||f(\boldsymbol x_1) - f(\boldsymbol x_2)
@@ -238,7 +234,7 @@ with this loss, and by definition we have
 $0 \leq \hat{\lambda} \leq 1$ for all values of
 $\delta_{-},\delta_{+}$.  Note that unlike the margin-ranking loss,
 where $\lambda=0$ is possible, every training sample in this case is
-associated with some non-negative loss value.  Fig.~\ref{fig:losses}
+associated with some non-negative loss value. Figure.~\ref{fig:losses}
 (d) shows the loss surface of $\hat{\lambda}(\delta_+,\delta_-)$,
 which compared to the ranking based loss has a clear slope between the
 two loss levels, and the loss reaches a plateau quickly when
@@ -288,8 +284,8 @@ to $1$.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[scale=0.19]{main/chapter02/images/tfeat_losses.png}
-    \caption{(a) Margin ranking loss. It seeks to push $n$ outside
+    \includegraphics[width=\linewidth]{main/chapter02/images/tfeat_losses.png}
+    \caption[Proposed triplet loss functions]{\textbf{Proposed triplet loss functions.} (a) Margin ranking loss. It seeks to push $n$ outside
   the circle defined by the margin $\mu$, and pull $p$ inside. (b)
   Margin ranking loss values in function of $\delta_{-},\delta_{+}$
   (c) Ratio loss. It seeks to force
@@ -324,7 +320,7 @@ becomes $\lambda(\delta_+,\delta_*) = max(0, \mu
 ratio loss.  This simple technique can lead to improved
 results without  computational overhead, as we experimentally show in section~\ref{sec:patch_classification}. 
 
-\subsubsection{Implementation details}
+\subsubsection{Experimental setup}
 
 To demonstrate the impact that triplet based training has on the performance of CNN descriptors we use a simple network architecture :
 \{Conv(7,7)-Tanh-Pool(2,2)-Conv(6,6)-Tanh-FC(128)\} implemented in
@@ -367,6 +363,7 @@ variants are possible such as different non-linearity layers
 (e.g. ReLU as in \cite{Han_2015_CVPR,ZagoruykoCVPR2015}), extra
 normalization layers, or multiscale architectures but these are likely
 to further improve the results and are beyond the scope of this work.
+We provide all the learned models and the training code for all the variants in GitHub\footnote{https://github.com/vbalnt/tfeat}. 
 
 \subsection{Experimental evaluation}
 
@@ -437,8 +434,8 @@ since it also includes a similarity metric layer  trained on top of the feature 
 %phenomenon is the fact that the Notredame patches are very high in
 %detail, something that might discourage the ratio criterion. 
 
-\begin{table*}[ht]
-\begin{tabular}{lcccccccc}
+\begin{table}
+\resizebox{\textwidth}{!}{\begin{tabular}{lcccccccc}
 \toprule 
     Training& & Not & Lib & Not  & Yos & Yos
   & Lib  & \\
@@ -478,15 +475,15 @@ since it also includes a similarity metric layer  trained on top of the feature 
  {\em TFeat-margin} &  128 & \bf 7.95 & \bf 8.10 &  7.64 &  \bf 9.88 & \bf 3.83  & \bf 3.39  & \bf 6.79 \\ 
  {\em TFeat-margin*} &  128 & \bf 7.08 & \bf 7.82 & 7.22 &  \bf 9.79  &  \bf 3.85  &  \bf 3.12 & \bf 6.47 \\ 
   \bottomrule
-\end{tabular}
-  \caption {Results form the Photo-Tour dataset \cite{BHW10}. Numbers
+\end{tabular}}
+  \caption[Patch pair classification results.]{\textbf{Patch pair classification results.} Results from the Photo-Tour dataset \cite{BHW10}. Numbers
     are reported in terms of {\em FPR95} following state of the art 
     in this field (see text for more details). {\em Italics} indicate
     the descriptors introduced here, and {\bf bold} numbers indicate
     the top performing descriptor. Yos:Yosemite, Lib:Liberty,
     Not:Notredame.}
 \label{tab:benchmark_brown} 
-\end{table*}
+\end{table}
 
 \subsubsection{Nearest neighbour patch matching}
 
@@ -520,33 +517,14 @@ images acquired by a camera, and the {\em generated matching dataset}
 synthetically. In the following sections, we discuss our results in
 those two datasets.
 
-\textbf{Ratio loss vs. margin loss.} Fig~\ref{fig:losses-vs} shows the performance of the same
-network trained for the same number of epochs on the Liberty
-dataset. We report the $mAP$  of image matching
-in the Oxford dataset. It can be observed that the margin based loss
-increases the performance as more epochs are used in the training
-process. No over-fitting is noticed when training and testing patch classification (e.g. training with ratio loss on
-Liberty and testing on Yosemite or Notredame). Interestingly, the ratio loss seems to decrease the patch
-matching performance as the network is trained for more epochs.  
-%This however  is not a problem of  over-fitting as our experiments for patch classification show that the ratio based method is less suitable for nearest neighbour matching. 
-This also hints that other methods from the literature that were only tested in the patch
-classification scenario, may not perform well in matching. In our view, this shows that evaluating descriptors only in
-terms of ROC curves is not representative for
-realistic matching scenarios. 
-% we would have to explain too much context [maybe we can mention bold that shows that binboost does not work very well in terms of mAP?]
-
-Finally, the results show that the loss functions with anchor swapping
-perform better than without swapping. Note that this simple technique
-can lead to improved results with no additional computational
-overhead.
-
 \begin{figure}
 \centering    
-\subfigure{\includegraphics[trim={2.1cm 0 2.1cm 0},width=0.24\textwidth]{main/chapter02/images/dog_ranking}}
-\subfigure{\includegraphics[trim={2.1cm 0 2.1cm 0},width=0.24\textwidth]{main/chapter02/images/dog_ratio}}
-\subfigure{\includegraphics[trim={2.1cm 0 2.1cm 0},width=0.24\textwidth]{main/chapter02/images/haraff_ranking}}
-\subfigure{\includegraphics[trim={2.1cm 0 2.1cm 0},width=0.24\textwidth]{main/chapter02/images/haraff_ratio}}
-\caption{Ratio based loss function overfits in the process of
+\includegraphics[trim={2.1cm 0 2.1cm 0},width=0.24\textwidth]{main/chapter02/images/dog_ranking}
+\includegraphics[trim={2.1cm 0 2.1cm
+0},width=0.24\textwidth]{main/chapter02/images/dog_ratio}
+\includegraphics[trim={2.1cm 0 2.1cm 0},width=0.24\textwidth]{main/chapter02/images/haraff_ranking}
+\includegraphics[trim={2.1cm 0 2.1cm 0},width=0.24\textwidth]{main/chapter02/images/haraff_ratio}
+\caption[Descriptor network comparing the different loss function]{\textbf{Descriptor network comparing the different loss function.} Ratio based loss function overfits in the process of
    separating the positive and negative pairs within a
   triplet, and does not perform well in the nearest neighbour
   matching experiment. On the contrary, learning with triplets and
@@ -556,6 +534,8 @@ overhead.
 \label{fig:losses-vs}
 \vspace{-0.1cm}
 \end{figure}
+
+\textbf{Ratio loss vs. margin loss.} Fig~\ref{fig:losses-vs} shows the performance of the same network trained for the same number of epochs on the Liberty dataset. We report the $mAP$  of image matching in the Oxford dataset. It can be observed that the margin based loss increases the performance as more epochs are used in the training process. No over-fitting is noticed when training and testing patch classification (e.g. training with ratio loss on Liberty and testing on Yosemite or Notredame). Interestingly, the ratio loss seems to decrease the patch matching performance as the network is trained for more epochs. This also hints that other methods from the literature that were only tested in the patch classification scenario, may not perform well in matching. In our view, this shows that evaluating descriptors only in terms of ROC curves is not representative for realistic matching scenarios. Finally, the results show that the loss functions with anchor swapping perform better than without swapping. Note that this simple technique can lead to improved results with no additional computational overhead.
 
 \textbf{Keypoint matching}. Figure \ref{fig:oxford_results} presents the $mAP$ results for Oxford benchmark,
 across all image sequences from the Oxford dataset, for two
@@ -575,10 +555,10 @@ although with a smaller margin.
 
 
 \begin{figure}
-\centering    
-\subfigure{{\includegraphics[trim={0.5cm 1.2cm 0.5cm 1.8cm},width=0.48\textwidth]{main/chapter02/images/oxford_dog}}}
-\subfigure{{\includegraphics[trim={0.5cm 1.2cm 0.5cm 1.8cm},width=0.48\textwidth]{main/chapter02/images/oxford_haraff}}}
-\caption{Evaluation on the Oxford image matching dataset
+\centering
+\includegraphics[trim={0.5cm 1.2cm 0.5cm 1.8cm},width=0.48\textwidth]{main/chapter02/images/oxford_dog}
+\includegraphics[trim={0.5cm 1.2cm 0.5cm 1.8cm},width=0.48\textwidth]{main/chapter02/images/oxford_haraff}
+\caption[Keypoint image matching quantitative results on real dataset]{\textbf{Keypoint image matching quantitative results on real dataset}. Evaluation on the Oxford image matching dataset
   \cite{schmid2003performance}, for two different types of feature
   extractors, DoG and  HarrisAffine.}
 \label{fig:oxford_results}
@@ -591,7 +571,7 @@ although with a smaller margin.
 \centering    
 \includegraphics[trim={0.22cm 2.6cm 0.22cm 2.6cm},width=\textwidth]{main/chapter02/images/fischer_dog}
 \includegraphics[trim={0.22cm 3cm 0.22cm 3cm},width=\textwidth]{main/chapter02/images/fischer_haraff}
-\caption{Evaluation on the generated-matching dataset
+\caption[Keypoint image matching results with synthetic dataset]{\textbf{Keypoint image matching results with synthetic dataset}. Evaluation on the generated-matching dataset
   \cite{FDB14}, for two different types of feature
   extractors, DoG and  HarrisAffine.}
 \label{fig:fischer_results}
@@ -635,6 +615,3 @@ better in nearest neighbour matching applications.  This indicates
 that a good performance on patch classification does not necessarily
 generalise to a good performance in nearest neighbour based
 frameworks.
-
-We provide all the learned models and the training code for all the
-variants at \url{https://github.com/vbalnt/tfeat}. 

@@ -1,6 +1,7 @@
+
 \section{Feature detection}
 
-At the beginning of this thesis we have introduced the concept of local features and the importance of its usage within the 3d reconstruction pipeline. In this section, we are going to analyze the very first step of the reconstruction pipeline which consists in detecting points of interest in the scene to later be described, matched and used to perform a partial 3d reconstruction. Features detection has been widely used with classical methods - we can see an example in figure~\ref{keynet_fig:feature_detection_example} of an image with its detected points of interesting using classical methods. However, in this thesis we are going to propose a novel approach for keypoint detection task that combines handcrafted and learned CNN filters within a shallow multi-scale architecture. Handcrafted filters provide anchor structures for learned filters, which localize, score and rank repeatable features. Scale-space representation is used within the network to extract keypoints at different levels. We design a loss function to detect robust features that exist across a range of scales and to maximize the repeatability score. The proposed method, named Key.Net model is trained on data synthetically created from ImageNet and evaluated on HPatches benchmark. Results are provided to show that the approach outperforms state-of-the-art detectors in terms of repeatability, matching performance and complexity.
+In this chapter we are going to discuss the concept of local features and the importance of its usage within the 3d reconstruction pipeline. First, we will analyze the very first step of a reconstruction pipeline which consists in detecting points of interest in the scene to later be described, matched and used to perform a partial 3d reconstruction. Features detection has been widely used with classical methods, for instance in figure~\ref{keynet_fig:feature_detection_example} we can see an example of an image with its detected points of interesting using classical methods. However, in this thesis we are going to propose a novel approach for keypoint detection task that combines handcrafted and learned CNN filters within a shallow multi-scale architecture. Handcrafted filters provide anchor structures for learned filters, which localize, score and rank repeatable features. Scale-space representation is used within the network to extract keypoints at different levels. We design a loss function to detect robust features that exist across a range of scales and to maximize the repeatability score. The proposed method, named Key.Net model is trained on data synthetically created from ImageNet and evaluated on HPatches benchmark. Results are provided to show that the approach outperforms state-of-the-art detectors in terms of repeatability, matching performance and complexity.
 
 \begin{figure}
     \centering
@@ -65,12 +66,12 @@ Previous detector was extended in \cite{Zhang_Felix_CVPR_17} by adding predefine
 LIFT \cite{LIFT} implemented an end-to-end feature detection and description pipeline, including the orientation estimation for every feature. Quadruple image patches and a ranking scheme of point responses as cost function were used in \cite{savinov2016quad} to train a neural network. In \cite{Georgakis_Karanam_CVPR18}, authors proposed a pipeline to automatically sample positive and negative pairs of patches from a region proposal network to optimize jointly point detections and their representations. Recently, LF-Net \cite{OnoSerra18} estimated position, scale and orientation of features by optimizing jointly the detector and descriptor.
 
 \begin{figure}[!tbh]
- \centering
- \hspace*{-1cm}    
-   \includegraphics[scale=0.7]{main/chapter02/figures/keynet_inference.pdf}
-   \vspace{-0.20cm}
-    \caption[Features detection architecture]{\textbf{Features detection architecture.} The proposed Key.Net architecture combines handcrafted and learned filters to extract features at different scale levels. Feature maps are upsampled and concatenated. Last learned filter combines the Scale Space Volume to obtain the final response map.}
-    \label{keynet_fig:net_architecture}
+\centering
+\hspace*{-1cm}    
+\includegraphics[width=\linewidth]{main/chapter02/figures/keynet_inference.pdf}
+\vspace{-0.20cm}
+\caption[Features detection architecture]{\textbf{Features detection architecture.} The proposed Key.Net architecture combines handcrafted and learned filters to extract features at different scale levels. Feature maps are upsampled and concatenated. Last learned filter combines the Scale Space Volume to obtain the final response map.}
+\label{keynet_fig:net_architecture}
 \end{figure}
 
 In addition to the above presented learned detectors, CNN architectures also were deployed to optimize the matching stage. \cite{Hartmann_Havlena_CVPR14} learned to predict which features and descriptors were matchable. More recently, \cite{Yi_Trulls_Good_Corr_CVPR18} introduced a network to learn to find good correspondences for wide-baseline stereo. Furthermore, other CNNs also studied to perform tasks beyond detection or matching. In \cite{Yi_Verdie_Fua_Lepetit_CVPR16}, the architecture assigned orientations to interest points and AffNet \cite{Mishkin_Radenovic_Matas_AffNet_18} used the descriptor loss to learn to predict the affine parameters of a local feature.
@@ -168,11 +169,11 @@ where $\mathbf{R}_{a}$ and $\mathbf{R}_{b}$ are the response map of $I_a$ and $I
 %----------------------------------------------------------------------------------------
 
 
-\begin{figure}[!tbh]
+\begin{figure}
 \vspace{-0.10cm}
  \hspace*{-0.4cm} 
  \centering
-   \includegraphics[scale=0.48]{main/chapter02/figures/M-SIP_Scale_Levels_v5.pdf}
+   \includegraphics[width=\linewidth]{main/chapter02/figures/M-SIP_Scale_Levels_v5.pdf}
    \vspace{-0.2cm}
     \caption[Key.Net qualitative results with different windows sizes]{\textbf{Key.Net qualitative results with different windows sizes.} Keypoints obtained after adding larger context windows to M-SIP operator. The points that are more stable remain as the M-SIP operator increases its window size. Feature maps in the middle row contain points around edges or non discriminative areas, while bottom row shows detections that are more robust under geometric transformations.}
     \label{fig:M-SIP_Scale_Levels}
@@ -192,6 +193,15 @@ where $s$ is the index of the scale level with $N_s$ as window size, $\mathbf{L}
 
 The combination of different scales imposes an intrinsic process of simultaneous scoring and ranking of keypoints within the network. In order to minimize the loss, the network must learn to give higher scores to robust features that remain dominant across a range of scales. Figure~\ref{fig:M-SIP_Scale_Levels} shows different response maps for increasing window size.
 
+\begin{figure}
+ \hspace*{-0.1cm} 
+ \vspace{-0.4cm}
+    \centering
+    \includegraphics[width=\linewidth]{main/chapter02/figures/dataset_v3.pdf}
+    \vspace{-0.0cm}
+    \caption[Homography synthetic data generation]{\textbf{Homography synthetic data generation.} We apply random geometric and photometric transformations to images and extract pairs of corresponding regions as the training set. Red crop is discarded by checking the response of the handcrafted filters.}
+    \label{fig:dataset}
+\end{figure}
 
 \subsection{Experimental Evaluation}
 \label{keynet_sec:experimental_evaluation}
@@ -208,15 +218,6 @@ In this section, we present implementation details, metrics and the dataset used
 \subsubsection{Training Data}
 \label{sec:create_dataset}
 
-\begin{figure}[!tbh]
- \hspace*{-0.1cm} 
- \vspace{-0.4cm}
-    \centering
-    \includegraphics[scale=0.8]{main/chapter02/figures/dataset_v3.pdf}
-    \vspace{-0.0cm}
-    \caption[Homography synthetic data generation]{\textbf{Homography synthetic data generation.} We apply random geometric and photometric transformations to images and extract pairs of corresponding regions as the training set. Red crop is discarded by checking the response of the handcrafted filters.}
-    \label{fig:dataset}
-\end{figure}
 We generate a synthetic training set from ImageNet ILSVRC 2012 \cite{RussakovskyDSKSMHKKBBF14} dataset. We apply random geometric transformations to images and extract pairs of corresponding regions as our training set. The process is illustrated in figure~\ref{fig:dataset}. The parameters of the transformations are: scale $[0.5, 3.5]$, skew  $[-0.8, 0.8]$ and rotation $[-60\degree, 60\degree]$. Textureless regions are discarded by checking if the response of any of the handcrafted filters is lower than a threshold. We modify contrast, brightness and hue value in HSV space to one of the images to improve network's robustness against illumination changes. In addition, for each pair, we generate a binary mask that indicates the common area between images. Mask is used in training to avoid regressing indexes of keypoints that are not present in the common region. There are 12,000 image pairs of size 192 $\times$ 192. We use 9,000 of them as the training data and 3,000 as validation set.
 
 %----------------------------------------------------------------------------------------
@@ -269,7 +270,7 @@ Keypoints are identified by spatial coordinates and scales at which the features
 %	Subsection: Implementation Details
 %----------------------------------------------------------------------------------------
 
-\subsubsection{Implementation Notes}
+\subsubsection{Experimental Setup}
 \label{subsec:Implementation_Details}
 Training is performed in a siamese pipeline, with two instances of Key.Net that share the weights and are updated at the same time. Each convolutional layer has $M$ = 8 filters of size $5 \times 5$, with He~\cite{HE_initializatio} weights initialization and L2 kernel regularizer. We compute the covariant constraint loss $\mathbf{L}_{M\mbox{-}SIP}$ for five scale levels, with the size of the M-SIP windows $N_s \in [8, 16, 24, 32, 40]$ and loss term $\lambda_s \in [256, 64, 16, 4, 1]$, that were determined by performing a hyperparameter search on the validation set. Larger candidate window sizes have greater mean errors between coordinate points since the maximum distance is proportional to the window size. Thus, $\lambda_s$ has the largest value for the smallest window. We use a batch size of 32, an Adam Optimizer with a learning rate of $10^{-3}$ and a decay factor of 0.5 after 30 epochs. On average, the architecture converges in 20 epochs, 2h on a machine with an i7-7700 CPU running at 3.60GHz and a NVIDIA GeForce GTX 1080 Ti. Evaluation benchmark, synthetic data generator, Key.Net network, and loss are implemented using TensorFlow and are available on GitHub\footnote{https://github.com/axelBarroso/Key.Net}. 
 

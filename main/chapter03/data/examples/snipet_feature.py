@@ -1,20 +1,12 @@
 # Define local deature detector and descriptor
 PS = 32  # patch size
-detector = K.ScaleSpaceDetector(
-    num_features=2000,
-    resp_module=K.BlobHessian(),
-    nms_module=K.ConvQuadInterp3d(10),
-    scale_pyr_module=K.ScalePyramid(3, 1.6, PS, double_image=False),
-    ori_module=K.LAFOrienter(19),
-    aff_module=K.LAFAffineShapeEstimator(19),
-    mr_size=6.0)
+detector = K.ScaleSpaceDetector(num_features=2000)
 
 descriptor = K.HardNet(pretrained=True)
 
 # detect and extract patches
 lafs, resps = detector(timg_gray)
 patches =  K.extract_patches_from_pyramid(timg_gray, lafs, 32)
-B, N, CH, H, W = patches.size()
 descs = descriptor(patches.view(B * N, CH, H, W)).view(B, N, -1)
 
 # Matching
