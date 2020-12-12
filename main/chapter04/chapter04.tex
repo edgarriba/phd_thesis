@@ -2,22 +2,27 @@
 \label{chap:chap_05}
 \vspace{-8mm}
 
-We present a novel approach for synthesizing realistic depth maps of deformable clothes from arbitrary views. Given a depth map of a hanging cloth captured from a camera, our model renders the depth map of how this cloth would be seen under a new camera pose, realistically hallucinating the occluded parts and their most likely creases and folds. While view synthesis is a well known problem in the RGB domain, it is still quite unexplored for inferring novel geometry, and specially for highly deformable objects. In this scenario the   problem becomes specially challenging due to the large amount of ambiguities and possible shapes. In order to tackle this  problem we introduce a novel architecture that performs geometry and occlusion reasoning in the feature space and combines it with adversarial learning.   Extensive evaluation shows that our approach, while being relatively simple, is able to generate novel views of complex cloth configurations in both simulated and real scenarios. 
+In the previous chapters we discussed how to approach scene reconstruction using classical and CNN based methods. We first reviewed specific parts of the pipeline that uses local features to detect and describe regions of interest later used to perform the 3d reconstruction. Having a pipeline where you can switch and replace some components eases those cases where you want to parallelize processes, detect errors or even perform offline optimisation of those specific parts. However, as we introduced in chapter 3, the trend for deep learning is to design the entire pipeline in an end to end fashion and optimise all the components of the pipeline under the same optimisation framework. For this reason, we introduced Kornia a framework that provides a wide variety of tools to combine classical vision with deep neural networks. In this chapter we are going focus on the design of a system to perform scene reconstruction, to be more precise deformable objects that follows the mentioned end to end trend during training and combines classical computer vision such as projective geometry theory.
+
+In the next sections we present a novel approach for synthesizing realistic depth maps of deformable clothes from arbitrary views. Given a depth map of a hanging cloth captured from a camera, our model renders the depth map of how this cloth would be seen under a new camera pose, realistically hallucinating the occluded parts and their most likely creases and folds. While view synthesis is a well known problem in the RGB domain, it is still quite unexplored for inferring novel geometry, and specially for highly deformable objects. In this scenario the problem becomes specially challenging due to the large amount of ambiguities and possible shapes. In order to tackle this  problem we propose a novel architecture that performs geometry and occlusion reasoning in the feature space and combines it with adversarial learning. Extensive evaluation shows that our approach, while being relatively simple, is able to generate novel views of complex cloth configurations in both simulated and real scenarios. 
+
+\newpage
+
+\begin{figure*}
+\begin{center}
+    \includegraphics[width=\linewidth]{main/chapter04/data/ipalm_cvpr_image_teaser.pdf}
+\end{center}
+    \caption[View Synthesis Generation from an input depth map]{\textbf{View Synthesis Generation from an input depth map.} Given a depth map of a deformable cloth (left) and a desired pose defined by a SE(3) rigid transformation, our model generates novel view synthesis preserving the geometry of the input in a high resolution output depth map. The main contribution of our work is to train this generative model in an end to end fashion with geometric constraints.}
+    \label{fig:teaser}
+\end{figure*}
 
 \section{Introduction}
 
 Being able to generate novel depth maps of a deformable cloth under an arbitrary camera view and from a single depth image,   would open the door to a number of new exciting applications in different areas, including augmented reality, virtual reality, 3D content production and robotics.
 
-\begin{center}
-    \centering
-    \includegraphics[width=\linewidth]{main/chapter04/data/ipalm_cvpr_image_teaser.pdf}
-    \captionof{figure}{Given a depth map of a deformable cloth (left) and a desired pose defined by a SE(3) rigid transformation, our model generates novel view synthesis preserving the geometry of the input in a high resolution output depth map. The main contribution of our work is to train this generative model in an end to end fashion with geometric constraints.}
-    \label{fig:teaser}
-\end{center}
-
 While recent advances in  convolutional neural networks~\cite{varley2017shape, zhou2020learning,haeni2020corn,yan2016perspective} and in particular in those architectures based on the   implicit function~\cite{qiang-nips-2019, chibane20ifnet} have addressed this problem for rigid objects, articulated objects and clothes under mild deformations, there exist no work in doing so for highly deformable and wrinkled clothes, such as the one shown in Fig.~\ref{fig:teaser}. This example corresponds to a T-shirt hanging from a point. Observe that the folds and creases seen from the input depth map rapidly disappear when moving away from the frontal view, while new folds appear. The complexity of this problem also invalidates other geometric approaches that have been used for cloth modelling, like~\cite{salzmann-2010, pumarola2018geometry, golyanik2018hdm, Tsoli_2019_ICCV}, which typically use triangular meshes to represent the underlying shape. In order to keep computational complexity bounded, the resolution of these meshes is quite limited, typically a few tens of vertices, preventing to correctly model complex deformations. 
 
-In this paper we introduce a novel and efficient network to represent depth maps of complex clothing deformations and generating novel views of it. The main novelty of the  network we propose is in its capacity to  perform geometry and occlusion reasoning in the feature space. Concretely, given an input depth map, we initially compute features with an off-the-shelf image encoder-decoder. We then perform projective feature warping according to the desired novel viewpoint we aim to render, and occlusion reasoning, still in the feature domain. We show that these operations, together with an adversarial loss, this one in the spatial domain, allows generating very accurate depth maps, realistically hallucinating the occluded creases and folds. See Fig.~\ref{fig:teaser} again.
+In this chapter we propose a novel and efficient network to represent depth maps of complex clothing deformations and generating novel views of it. The main novelty of the  network we propose is in its capacity to  perform geometry and occlusion reasoning in the feature space. Concretely, given an input depth map, we initially compute features with an off-the-shelf image encoder-decoder. We then perform projective feature warping according to the desired novel viewpoint we aim to render, and occlusion reasoning, still in the feature domain. We show that these operations, together with an adversarial loss, this one in the spatial domain, allows generating very accurate depth maps, realistically hallucinating the occluded creases and folds. See Fig.~\ref{fig:teaser} again.
 
 We train and evaluate  the proposed network on  synthetic and real data, and in both cases we demonstrate its ability to hallucinate unseen and intricate details of deformed cloth. Additionally, the proposed architecture builds upon convolutional blocks, allowing to be executed very efficiently at inference (in a few milliseconds). % This makes our system suitable for motion planning pipeline and control policies for robot textile manipulation.
 
@@ -47,6 +52,13 @@ For instance, as shown in Fig.~\ref{fig:teaser}, we assume a cloth garment hung 
 Our framework for estimating the depth of a deformable object from an input depth map and desired rigid transformation is shown in Fig.~\ref{fig_architecture}. We have designed our architecture based on a \textit{Deep Generative Adversarial Neural Network} scheme which intrinsically uses projective geometry theory to reason about the global geometric aspect of the problem. The network is composed of a primary branch, the \textit{Generator}, that regresses the depth map viewed from   a desired pose from which we analytically estimate a normal map and a segmentation mask to separate the object from the background. This principal branch is responsible to learn geometric-aware features using a classic projective geometry pipeline to project learnt features from one view to another. In this same branch, we include another network that combines the original and projected features with and encoding of the applied rigid transformation that is responsible to reason about the potential occlusions and projection order. In addition, we consider a second branch, the \textit{Critic}, that takes the produced depth map and learns to discriminate whether is realistic enough to solve the task and produce more robust solutions to the problem. In the results section we will show that after adapting the projective geometry at the features level, our architecture is able to generate novel synthetic views of deformable cloth depth maps under large camera view changes.
 
 
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=\textwidth]{main/chapter04/data/ipalm_cvpr_architecture.pdf}
+    \caption[Proposed architecture for view synthesis generation]{\textbf{Proposed architecture for view synthesis generation.} The proposed architecture consists of two main branches that fulfils in a classic \textit{Deep Generative Adversarial Network} scheme. The first, is the \textit{Generator} that has two prediction heads: foreground/background respect to the object and depth regression from which we perform an analytical estimation of the normals. The second, the \textit{Critic} takes the estimated depth map and classifies as a real or fake sample to help for a better generalisation during the depth regression.}
+    \label{fig_architecture}
+\end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %===============================================
 \section{Projective Geometry Network}
@@ -58,13 +70,6 @@ In this section we give the formulation of the problem that we want to solve and
 Let $\mathbf{X_w}$ be the 3D world coordinates of a deformed cloth, and $\mathbf{D}_{\textrm{in}} \in \mathbb{R}^{H \times W}$ the depth map representation when seen from a particular perspective defined by a camera pose $\mathbf{T}_{\textrm{w}}^{\textrm{in}}\in$ SE(3) that relates the mapping of the object 3D coordinates from a source camera to a world coordinates system. We aim at designing a \textit{Deep Generative Neural Network} framework that given an input depth map $\mathbf{D}_{\textrm{in}}$ and a desired output pose $\mathbf{T}_{\textrm{w}}^{\textrm{out}}$, synthesizes a new depth map $\mathbf{D}_{\textrm{out}}\in \mathbb{R}^{H \times W}$ projecting $\mathbf{X_w}$ to the desired camera reference frame which can be formally described by the following mapping $(\mathbf{D}_{\textrm{in}}, \mathbf{T}_{\textrm{out}})\rightarrow \mathbf{D}_{\textrm{out}}$.
 
 We also assume that the camera calibration parameters are known, namely $\mathbf{K}$ that describes the focal lengths $(f_u, f_v)$, and principal point $(c_u, c_v)$ which are later  used to project the object coordinates from the camera frame to the world coordinate system. Our approach is solved in a supervised manner sampling tuples defined by $\{\mathbf{D}_{\textrm{in}}^i, \mathbf{T}_{\textrm{out}}^i, \mathbf{D}_{\textrm{out}}^i\}_{i=1}^N$ from the dataset used both for training and evaluation (different splits). With our method we do not intend to do an explicit reconstruction of the object shape, but instead learn geometric invariant features through a process of features projection from one view to another for later combining and reason about the occlusions.
-
-\begin{figure*}[t!]
-    \centering
-    \includegraphics[width=\textwidth]{main/chapter04/data/ipalm_cvpr_architecture.pdf}
-    \caption{\small{\textbf{Proposed architecture.} The proposed architecture consists of two main branches that fulfils in a classic \textit{Deep Generative Adversarial Network} scheme. The first, is the \textit{Generator} that has two prediction heads: foreground/background respect to the object and depth regression from which we perform an analytical estimation of the normals. The second, the \textit{Critic} takes the estimated depth map and classifies as a real or fake sample to help for a better generalisation during the depth regression.}}
-    \label{fig_architecture}
-\end{figure*}
 
 \subsection{Network architecture}
 Given an input depth image $\mathbf{D}_{\textrm{in}}$, of size $H\times W$, the initial step consists in extracting a set of dense local features per pixel. Following~\cite{pix2pix2017} we feed $\mathbf{D}_{\textrm{in}}$ into a first encoder-decoder network which is configured in such  a way that the bottleneck has  small downsampling factor of 2. Let us denote these features as $\phi_1(\mathbf{D}_{\textrm{in}}) \rightarrow \mathbf{F}_{\textrm{in}}$ of size $F\times H \times W$. The intuition is that these local features will keep information of the 3D local structures in order to later reason about the depth ordering to perform the view projection.
@@ -140,17 +145,17 @@ where $\lambda_{gp}$ is a penalty coefficient.
      \text{Loss} =\frac{1}{5}(L_{\textrm{D}} + L_{\textrm{M}} + L_{\textrm{S}} + L_{\textrm{N}} + L_{\textrm{A}}) 
 \end{equation}
 
-\section{Implementation Details}
+\section{Experimental setup}
 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{main/chapter04/data/ipalm_cvpr_grid_dataset_synth.pdf}
-    \caption{\small{{\bf Sample images of the synthetic dataset.} We build a large dataset of deforming clothes viewed by a ring of 36 depth cameras. The cloth model is hung from a different position (rows) and captured from several cameras (columns).   
-    }}
+    \caption[Sample images of the synthetic dataset]{{\bf Sample images of the synthetic dataset.} We build a large dataset of deforming clothes viewed by a ring of 36 depth cameras. The cloth model is hung from a different position (rows) and captured from several cameras (columns).}
     \label{fig_setup_cameras}
 \end{figure}
 
-The model is trained with the synthetically generated dataset described in the next section, using depth images of size $H \times W = 512 \times 512$. The image features $\phi_1$ and $\phi_2$ are obtained from an auto-encoder with skipped connections~\cite{pix2pix2017} and a downscaling factor of 2 and 8, respectively. The resulting feature maps from $\phi_1(\mathbf{D}_{\textrm{in}})$ are of size of $F\times H \times W = 32 \times 512 \times 512$. Additionally, we normalize the depth maps by its mean and standard deviation, and the input depth map background mask is concatenated to the input of $\phi_1$. The computed embedding for $\phi_3(\mathbf{T}_{\textrm{in}}^{\textrm{out}})$ has also size of 32, which is later expanded and concatenated to every pixel of $\mathbf{F}_{\textrm{in}}$ and $\mathbf{F}_{\textrm{out}}$. The head for predicting the output depth map $\mathbf{D}_{\textrm{out}}$ has a non-linearity \text{TanH} to keep the distribution normalized. We use Adam solver~\cite{kingma2017adam} with a learning rate of 0.0001 for both the generator and discriminator, $\beta1 = 0$ , $\beta2 = 0.999$ and a Cosine Annealing learning rate scheduling~\cite{LoshchilovH16a}.  The model is trained with a batch size of 8 in a single Nvidia\textsuperscript{\textregistered} GTX 1080 for 1 day.
+The model is trained with the synthetically generated dataset described in the next section, using depth images of size $H \times W = 512 \times 512$. The image features $\phi_1$ and $\phi_2$ are obtained from an auto-encoder with skipped connections~\cite{pix2pix2017} and a downscaling factor of 2 and 8, respectively. The resulting feature maps from $\phi_1(\mathbf{D}_{\textrm{in}})$ are of size of $F\times H \times W = 32 \times 512 \times 512$.% Additionally, we normalize the depth maps by its mean and standard deviation, and the input depth map background mask is concatenated to the input of $\phi_1$.
+The computed embedding for $\phi_3(\mathbf{T}_{\textrm{in}}^{\textrm{out}})$ has also size of 32, which is later expanded and concatenated to every pixel of $\mathbf{F}_{\textrm{in}}$ and $\mathbf{F}_{\textrm{out}}$. The head for predicting the output depth map $\mathbf{D}_{\textrm{out}}$ has a non-linearity \text{TanH} to keep the distribution normalized. We use Adam solver~\cite{kingma2017adam} with a learning rate of 0.0001 for both the generator and discriminator, $\beta1 = 0$ , $\beta2 = 0.999$ and a Cosine Annealing learning rate scheduling~\cite{LoshchilovH16a}.  The model is trained with a batch size of 8 in a single Nvidia\textsuperscript{\textregistered} GTX 1080 for 1 day.
 
 \def\rot#1{\rotatebox{90}{#1}}
 \begin{figure*}
@@ -167,7 +172,7 @@ The model is trained with the synthetically generated dataset described in the n
     \includegraphics[scale=0.1]{main/chapter04/data/plot_pcd_5_real} &
     \includegraphics[scale=0.1]{main/chapter04/data/plot_pcd_10_real}\\
     \end{tabular}
-    \caption{\small{{\bf Quantitative evaluation on synthetic and real data.} Evaluation of the network performance when generating novel views from the same input depth map under different rotation angles. {\em Baseline} is the analytic geometric rotation of the input depth map. {\em Model} is the result obtained from our network. {\em Model sparse} is the result of the proposed model, evaluated only on the image pixels that have a valid depth after the projection between the two views. \textbf{Column 1:} Chamfer distance vs the rotation. The lower the better. \textbf{Columns 2-4:} Percentage Correct Depth (PCD) at different accuracy: [1, 5, 10] cm. The higher the better.}}
+    \caption[Quantitative evaluation on synthetic and real data]{{\bf Quantitative evaluation on synthetic and real data.} Evaluation of the network performance when generating novel views from the same input depth map under different rotation angles. {\em Baseline} is the analytic geometric rotation of the input depth map. {\em Model} is the result obtained from our network. {\em Model sparse} is the result of the proposed model, evaluated only on the image pixels that have a valid depth after the projection between the two views. \textbf{Column 1:} Chamfer distance vs the rotation. The lower the better. \textbf{Columns 2-4:} Percentage Correct Depth (PCD) at different accuracy: [1, 5, 10] cm. The higher the better.}
     \label{fig_plot_synth_rotations}
 \end{figure*}
 
@@ -205,7 +210,7 @@ To train the network, we need several interactions. To be more specific, in the 
 \begin{figure*}
 \begin{center}
     \includegraphics[width=\linewidth]{main/chapter04/data/ipalm_cvpr_grid_synth_vertical.pdf}
-    \caption{\small{{\bf Qualitative results on synthetic data.} Outputs produced by our model under two different simulations (Left to Right blocks) showing several rotations from -180 to 180 degrees in the Z-axis (Left to Right columns). \textbf{Row 1:} Input depth map used to hallucinate the novel views. \textbf{Row 2-3:} Ground truth depth and normals maps from the evaluation set. \textbf{Row 4:} Baseline computed from the input depth map. \textbf{Row 5-6:} Predicted Depth map and the normals computed analytically from the predicted Depth.}}
+    \caption[Qualitative results on synthetic data]{{\bf Qualitative results on synthetic data.} Outputs produced by our model under two different simulations (Left to Right blocks) showing several rotations from -180 to 180 degrees in the Z-axis (Left to Right columns). \textbf{Row 1:} Input depth map used to hallucinate the novel views. \textbf{Row 2-3:} Ground truth depth and normals maps from the evaluation set. \textbf{Row 4:} Baseline computed from the input depth map. \textbf{Row 5-6:} Predicted Depth map and the normals computed analytically from the predicted Depth.}
     \label{fig_outputs_synthetic}
 \end{center}
 \end{figure*}
@@ -213,7 +218,7 @@ To train the network, we need several interactions. To be more specific, in the 
 \begin{figure}
 \begin{center}
     \includegraphics[width=0.5\linewidth]{main/chapter04/data/ipalm_cvpr_grid_real_vertical.pdf}
-    \caption{\small{{\bf Qualitative results on real data.} Results obtained with our network on a sequence captured from a real camera setup. Similar to Figure.~\ref{fig_outputs_synthetic}, the network produce new views from different rotation in the Z-axis from -180 to 180 degrees. \textbf{Row 1:} Input depth map. \textbf{Row 2-3:} Ground truth depth and normals maps. \textbf{Row 4:} Baseline computed from the input depth map. \textbf{Row 5-6:} Predicted Depth map and the normals computed analytically from the predicted Depth.}}
+    \caption[Qualitative results on real data]{{\bf Qualitative results on real data.} Results obtained with our network on a sequence captured from a real camera setup. Similar to Figure.~\ref{fig_outputs_synthetic}, the network produce new views from different rotation in the Z-axis from -180 to 180 degrees. \textbf{Row 1:} Input depth map. \textbf{Row 2-3:} Ground truth depth and normals maps. \textbf{Row 4:} Baseline computed from the input depth map. \textbf{Row 5-6:} Predicted Depth map and the normals computed analytically from the predicted Depth.}
     \label{fig_outputs_real}
 \end{center}
 \end{figure}
@@ -275,12 +280,12 @@ Network with GAN
 \bottomrule
 \end{tabular}
 }
-\caption{\small{{\bf Quantitative results under different network configurations.} The table shows the results in terms of \textit{Chamfer distance}   mean and standard deviation and the \textit{Cosine Distance}  between the normals maps for the Baseline and the model trained with and without the Adversarial loss. The evaluation has been done from -180 to 180 degrees of rotation.}}
+\caption[Quantitative results under different network configurations]{{\bf Quantitative results under different network configurations.} The table shows the results in terms of \textit{Chamfer distance}   mean and standard deviation and the \textit{Cosine Distance}  between the normals maps for the Baseline and the model trained with and without the Adversarial loss. The evaluation has been done from -180 to 180 degrees of rotation.}
 \label{table_ablation_study}
 \end{center}
 \end{table}
 
-\section{Discussion}
+\section{Conclusions}
 
-In this paper we have proposed an approach to synthesize novel views of depth maps for deforming clothes.  We have shown that encoding the input depth map using spatial-aware features, and geometrically transforming these features, allows hallucinating complex details, like folds and creases, which were not visible in the input depth map. Moreover, we have shown that our method is capable to recuperate many details in very extreme viewpoints where the geometric information is very little, since it is lost by the self-occlusions.
+In this chapter we have proposed an approach to synthesize novel views of depth maps for deforming clothes. We have shown that encoding the input depth map using spatial-aware features, and geometrically transforming these features, allows hallucinating complex details, like folds and creases, which were not visible in the input depth map. Moreover, we have shown that our method is capable to recuperate many details in very extreme viewpoints where the geometric information is very little, since it is lost by the self-occlusions.
 We have presented several quantitative results on a synthetic dataset and proof that the proposed method also can work with real data captured by a depth sensor. Finally, the system is based on purely convolutional blocks, allowing to  perform inference in a few milliseconds.

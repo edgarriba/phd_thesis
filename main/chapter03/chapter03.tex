@@ -3,13 +3,11 @@
 
 \newcommand{\lib}{\textit{Kornia}}
 
-In the previous chapter we discussed the usage of classical and CNN methods to compute and describe local features for scene reconstruction pipelines. The pre-existing and even the proposed methods can be understood as black boxes of a global pipeline being easy to replace and execute as separated processes. However, the trend for deep learning approaches is to design systems that can perform a task in an end to end fashion so that every single step in the pipeline can be connected and jointly optimised. In this chapter, we propose a framework that bridges such effort and fills the gap between classical computer vision and deep learning under the paradigm of differentiable programming, or as recently called Software 2.0. In addition, the framework eases the transition to implement jointly methods such as end to end pipelines for scene reconstruction as we will see in the last chapter of this thesis.
+In the previous chapter we discussed the usage of classical and CNN methods for the tasks to detect and describe local features in a scene reconstruction pipeline. Those tasks can be understood as black boxes inside a pipeline making them trivial to replace in terms of design or executed as separated processes. Thus, having independent processes in a pipeline can be beneficial in some aspects but it is known that deep learning systems work better when the entire pipeline is jointly optimised. To do that, there is a need for adapting pre-existing methods so that can be included inside the same computational graph as the learnable blocks and allow to back-propagate the gradients through the entire pipeline. For this reason, in this chapter we propose a framework that bridges classical computer vision and deep learning under the paradigm of differentiable programming, or as recently called Software 2.0. In addition, the framework eases the transition to implement jointly methods such as end to end pipelines for scene reconstruction as we will see in the last chapter of this thesis.
 
 We present \lib{}, an open source computer vision library built upon a set of differentiable routines and modules that aims to solve generic computer vision problems. The package uses \textit{PyTorch} as its main backend, not only for efficiency but also to take advantage of the reverse auto-differentiation engine to define and compute the gradient of complex functions. Inspired by \textit{OpenCV}, \lib{} is composed of a set of modules containing operators that can be integrated into neural networks to train models to perform a wide range of operations including image transformations, camera calibration, epipolar geometry, and low level image processing techniques, such as filtering and edge detection that operate directly on high dimensional tensor representations on graphical processing units, generating faster systems.
 
-\section{Introduction}
-
-\begin{figure}[h!]
+\begin{figure}[h]
     \setlength\tabcolsep{2.5pt}
     \begin{center}
         \begin{tabular}{c c c c c}
@@ -35,6 +33,9 @@ We present \lib{}, an open source computer vision library built upon a set of di
     \label{fig:imgproc}
 \end{figure}
 
+\newpage
+\section{Introduction}
+
 Computer vision has driven a lot of technological advances in modern society for many different industries such as Automotion to improve the perception algorithms for self-driving cars; Factory Automation precisely in robotics field; or Audio Visual Production for visual effects generation. One of the key components of this achievements has been thanks to open source software that provided to the community free and accessible implementations of the main computer vision and machine learning algorithms.
 
 There exist several open-source libraries widely used by the computer vision community which are tailored to process images using Central Processing Units (CPUs) such as OpenCV~\citep{opencv}, scikit-image~\citep{scikit-image}, or Pillow~\citep{pillow} and many others that are optimised for specific use cases. However, nowadays many of the top performing computer vision algorithms rely on deep learning models, with the huge need to process images in parallel using Graphical Processing Units (GPUs) in order to achieve high-performance requirements. Within that context, during the last couple of years many frameworks for deep learning have gained a lot popularity; to mention some of them: PyTorch~\citep{pytorch}, Tensorflow~\citep{tensorflow2015-whitepaper}, Caffe~\citep{caffe}, MXNet~\citep{journals/corr/ChenLLLWWXXZZ15}, or MatConvNet~\citep{Vedaldi15}. In concrete, PyTorch \citep{pytorch} due to its reverse-mode automatic differentiation engine, dynamic computation graph, distributed learning, eager/script execution modes and its intuitive API introduces a different paradigm within the community. PyTorch and its ecosystem provide a few packages to work with images such as its most popular toolkit, \textit{torchvision}, which is mainly designed to perform data augmentation, read popular datasets and implementations of state-of-the-art models for tasks such as detection, segmentation, image generation, and landmark detection. Despite all these virtues, PyTorch is still lacking in implementations for classical vision algorithms using their native tensor data structures and making them efficient to be used on GPUs or any high-permanence device supported by PyTorch.
@@ -55,7 +56,7 @@ Nvidia Dali & \checkmark & \checkmark & \checkmark & $\times$ & $\times$ \\
 tf.image  & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
 \lib{}   & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
 \end{tabular}
-\caption{\label{tab:table-cv-frameworks} Comparison between  different computer vision libraries by their main features. \lib{} and tensorflow-image are the only frameworks that fully support batched operators and differentiable on the GPU.}
+\caption[Comparison between  different computer vision libraries.]{\label{tab:table-cv-frameworks} \textbf{Comparison between  different computer vision libraries.} \lib{} and tensorflow-image are the only frameworks that fully support batched operators and differentiable on the GPU.}
 \end{table*}
 
 In addition to introducing \lib, in this chapter we contribute with some demos showcasing how \lib{} and its components eases the implementation of several common computer vision tasks like image reconstruction, image registration, depth estimation or local features detection. During the different sections, it is also included an extensive explanation of the different capabilities and algorithms that can be found in each of the different modules of the library, including short coding examples and links with fully working examples; we also include some additional experiments to benchmark against other frameworks and evaluate its usage depending on the batch size; and finally, we showcase an example about how easily can \lib{} be integrated within an end to end training system.
@@ -88,16 +89,14 @@ In terms of software, new frameworks such \textit{Caffe} \citep{caffe}, Torch \c
 
 With the rise of deep learning, most standard computer vision frameworks are now being used to perform pre-processing, or data augmentation on the CPU, which for some use cases like volumetric data in medical imaging or multi-spectral data is quite limited due to the need of parallelism to not decrease performance in both, training and inference time. Examples of libraries that are currently used to perform pre- and post-processing on the CPU within the deep learning frameworks are OpenCV or Pillow.
 
-Given that most  deep learning frameworks still use standard vision libraries to perform the pre- and post-processing on CPU and similar to Tensorflow.image {as Table~\ref{tab:table-cv-frameworks} shows, \lib{} fill the gap} within the PyTorch ecosystem by introducing a computer vision library that implements classical computer vision algorithms taking advantage of the different properties that modern frameworks for deep learning like PyTorch can provide:
+Given that most  deep learning frameworks still use standard vision libraries to perform the pre- and post-processing on CPU and similar to Tensorflow.image {as Table~\ref{tab:table-cv-frameworks} shows, \lib{} fill the gap} within the PyTorch ecosystem by introducing a computer vision library that implements classical computer vision algorithms taking advantage of the different properties that modern frameworks for deep learning like PyTorch can provide.
 
-\begin{itemize}
-	\item \textbf{differentiability} to avoid writing derivative functions for complex loss functions.
-	\item \textbf{transparency} to perform parallel or serial computing in high-performance hardware devices in a common API.
-	\item \textbf{distributed} to deploy large-scale applications in distributed systems.
-	\item \textbf{production} ready to be used in efficient oriented deep learning applications.
-\end{itemize}
-
-\newpage
+% \begin{itemize}
+% 	\item \textbf{differentiability} to avoid writing derivative functions for complex loss functions.
+% 	\item \textbf{transparency} to perform parallel or serial computing in high-performance hardware devices in a common API.
+% 	\item \textbf{distributed} to deploy large-scale applications in distributed systems.
+% 	\item \textbf{production} ready to be used in efficient oriented deep learning applications.
+% \end{itemize}
 
 \section{\lib: Computer Vision for PyTorch}
 \label{section:kornia}
@@ -692,4 +691,5 @@ The detector used in this example is the Hessian blob detector~\citep{Hessian78}
 Figure~\ref{fig:wbs} shows the original images, optimized images and optimized images with matching features visualized.  The perturbations are not quite imperceptible, but that it is not the goal of the current example. The code for this example is provided in the following \underline{\color{blue}\href{https://github.com/kornia/kornia-examples/blob/master/local-feature-adversarial-attack.ipynb}{link}}.
 
 \section{Conclusions}
-We have introduced \lib, a library for computer vision in PyTorch that implements traditional vision algorithms in a differentiable manner making use of hardware acceleration to improve performance. We demonstrated that using our library, classical vision problems such as image registration by homography, depth estimation, or local features matching can be very easily solved with a high performance similar to existing libraries making use of GPU acceleration and batch parallelism. By leveraging this project, we believe that classical computer vision libraries can take a different role within the deep learning environments as components of layers of the networks as well as pre- and post-processing of the results. In addition, one more reason why combining traditional and deep learning methods through \lib{} is the fact that it can help to minimize the time-cost of having engineers tuning hyper-parameters for classical vision methods where instead those parameters can be easily optimised for specific tasks making more powerful the use of differentiability. In the future, we expect researchers and companies increase the number of contributions to the project to grow on other areas such as Structure from Motion or volumetric image transformations. At the time of this submission, \lib{} has 2450 GitHub stars and 250 forks and up to 50 contributors and it's been used by more than 50 projects.
+We have introduced \lib, a library for computer vision in PyTorch that implements traditional vision algorithms in a differentiable manner making use of hardware acceleration to improve performance. We demonstrated that using our library, classical vision problems such as image registration by homography, depth estimation, or local features matching can be very easily solved with a high performance similar to existing libraries making use of GPU acceleration and batch parallelism. By leveraging this project, we believe that classical computer vision libraries can take a different role within the deep learning environments as components of layers of the networks as well as pre- and post-processing of the results. In addition, one more reason why combining traditional and deep learning methods through \lib{} is the fact that it can help to minimize the time-cost of having engineers tuning hyper-parameters for classical vision methods where instead those parameters can be easily optimised for specific tasks making more powerful the use of differentiability.
+%In the future, we expect researchers and companies increase the number of contributions to the project to grow on other areas such as Structure from Motion or volumetric image transformations. At the time of this submission, \lib{} has 2450 GitHub stars and 250 forks and up to 50 contributors and it's been used by more than 50 projects.
