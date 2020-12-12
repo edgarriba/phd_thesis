@@ -1,23 +1,28 @@
-%\graphicspath{{./main/5_end/figs/}}
-
 \chapter{Conclusions and Future work}
 \label{chap:end}
 
 \section{Conclusions}
 
-In this PhD dissertation we have addressed the problem of scene reconstruction using local features and later as an end to end pipeline including some of the ideas from projective geometry. During this thesis we have also reviewed the different approaches proposed during the last decade and contributed with methods that empirically show an improvement over the state of the art. Even though scene reconstruction can be considered as a solved problem, we have seen during the different chapters of this thesis that there is still space for improvements in each step of the pipeline, or even in the pipeline itself.
+In this PhD dissertation we have addressed the problem of scene reconstruction using local features and later as an end to end pipeline including some of the ideas from projective geometry. During this thesis we have reviewed the different approaches proposed during the last decade and contributed with methods that empirically show an improvement over the state of the art. Even though scene reconstruction can be considered as a solved problem in controlled conditions, we have seen during the different chapters of this thesis that there is still space for improvements in each step of the pipeline, or even in the pipeline itself.
 
-In chapter 2, we have reviewed the reconstruction problem using local features to detect and describe regions of interest to help with the reconstruction of the different views. In addition, we have proposed two different methods that use CNNs for detecting keypoints and compute descriptors from image patches. We have demonstrated through experimental results that both methods can improve the results over pre-existing methods for the specific task of image matching. In addition, we have proposed two differentiable operators to extract the keypoints localization and a triplet loss function that bases on geometry constraints. Both methods can easily replace previous methods in a reconstruction pipeline and be used as a base to design more complex end to end pipelines.
+In chapter 2, we have faced the reconstruction problem using local features to detect and describe regions of interest to find the image correspondences needed by classical scene reconstruction pipelines. In addition, we have contributed with two different methods that use CNNs for detecting keypoints and compute descriptors from image patches. We have demonstrated through experimental results that both methods can improve the results over pre-existing methods for the specific task of image matching. In addition, we have proposed two differentiable operators to extract the keypoints localization and a triplet loss function based on geometry constraints. Both methods can easily replace keypoint detection and description modules of classical scene reconstruction pipelines, and can be also used in other related problems like SLAM or image mosaicing.
 
-In chapter 3, we have introduced \textit{Kornia} as a framework that eases the design of end to end pipelines by implementing classical computer vision algorithms into a differentiable programming paradigm. We have showed different uses cases where \textit{Kornia} can help in the design of classical vision algorithms and be used to optimise the parameters of the algorithms. We also provided benchmarks showing the potential of the library to be used as a tool to implement efficiently existing algorithms or data augmentation in high performance devices. The so well adoption of the framework by the community it is also an indicator that having the ability to include the ideas of traditional methods as constraints within the networks can open different research lines.
+In chapter 3, we have introduced \textit{Kornia}, our PyTorch based library that eases the design of end-to-end pipelines by implementing classical computer vision algorithms into a differentiable programming paradigm. We have showed different uses cases where \textit{Kornia} has been used to recast classical computer vision algorithms in a differentiable manner. We also provided benchmarks showing the potential of the library to be used as a tool to implement efficiently existing algorithms or data augmentation in high performance devices. The so well adoption of the framework by the community it is an indicator that having the ability to include the ideas of traditional methods inside deep learning architectures has a lot of potential and incentives the development of new computer vision solutions.
 
-In chapter 4, we have taken the ideas of designing an end to end pipeline mixing classical projective geometry within the deep networks to produce depth maps of unseen views for deformable cloths objects. We have also experimented with synthetically generated and real data and showed the performance of the method over different degrees of rotation. The obtained results show that including geometric constraints within the end to end network is very beneficial in front of new data and helps with the generalization of the problem.
+In chapter 4, we have contributed with an end-to-end system based on Kornia, devoted to estimate the depth maps of unseen views of clothing. We have experimented with synthetically generated and real data and showed the performance of the method over different degrees of rotation. The obtained results show that including geometric constraints within the end to end network is very beneficial in front of new data and helps with the generalization of the problem.
 
 As a final remark, along this thesis we have seen that deep learning have taken over most of the existing works in the computer vision community. It can be also noticed that the computer vision community has completely switched from classical methods to pure deep learned networks in order to solve tasks with well founded methods. However, through the different contributions in this thesis we have showed that there is still room for the classical ideas to be used along with new methods and technologies. For this reason, we believe that in the long run the combination of classical computer vision and deep learning can be very beneficial for the community and can open a wide variety of research lines and opportunities.
+
+\section{Futures Perspectives}
+
+TODO
 
 \section{Scientific Articles}
 
 \subsection{International Conferences and Workshops}
+
+The work developed during this thesis has been presented in several international conferences and submitted to two journals.
+
 \begin{itemize}
 \item \textbf{Edgar Riba}, Dmytro Mishkin, Daniel Ponsa, Ethan Rublee, and Gary Bradski. Kornia: an Open Source Differentiable Computer Vision Library for PyTorch. In \textit{Winter Conference on Applications of Computer Vision (WACV)}, 2020.
 \item Vassileios Balntas, \textbf{Edgar Riba}, Daniel Ponsa, and Krystian  Mikolajczyk. Learning local feature descriptors with triplets and shallow convolutional neural networks. In \textit{BMVC}, 2016.
@@ -36,44 +41,41 @@ As a final remark, along this thesis we have seen that deep learning have taken 
 
 \section{Contributed Code}
 
-As side activities I have been strongly involved with the open source community and contributed to a few packages related to the topics of this thesis.
-
-As highlight we would like to remark that the Kornia library has been a great success with a strong adoption from the deep learning and computer vision community in PyTorch. The parent project PyTorch have selected Kornia to be part of the official Ecosystem and used the brand many times in their promotion talks as a good successful project example. In addition, Kornia has been adopted by a large number of community projects and has become one of the default libraries to work with computer vision in PyTorch. Currently, it is in the process of creating a legal non-profit organisation to keep the project on going across the community.
-
-In the follow I list other open source projects that I have been involved during the thesis that helped me to get a good understanding about computer vision and deep learning:
+Among the different activities performed during this thesis, part of the work has been involved in the development of software in different open source initiatives. In the follow I list other open source projects that I have been involved during the thesis that helped me to get a good understanding about computer vision and deep learning:
 
 \begin{itemize}
-\item \textbf{Kornia}: differentiable computer vision library for PyTorch. Project leader and core maintainer of the project and community leader.\\
-URL:\url{https://github.com/kornia/kornia}.
-\item\textbf{tiny-dnn:} a header only, dependency-free deep learning framework in C++14. Maintainer of this small library implementing deep learning functionalities in C++ and later integrated into OpenCV as part of the Google Summer of Code. URL: \url{https://github.com/tiny-dnn/tiny-dnn}
-\item \textbf{TFeat:} Code to reproduce the results presented in \cite{BalntasBMVC2016}.\\
+\item \textbf{Kornia}: differentiable computer vision library for PyTorch. I am the project leader and core maintainer of the project and community leader.\\
+URL: \url{https://github.com/kornia/kornia}.
+\item \textbf{tiny-dnn:} a header only, dependency-free deep learning framework in C++14. I maintained of this small library implementing deep learning functionalities in C++ and later integrated into OpenCV as part of the Google Summer of Code.\\
+URL: \url{https://github.com/tiny-dnn/tiny-dnn}.
+\item \textbf{TFeat:} Python repository to reproduce the results presented in~\cite{BalntasBMVC2016}. I co-maintain the repository with the other authors.\\
 URL: \url{https://github.com/vbalnt/tfeat}.
-\item \textbf{TripletLoss} in PyTorch. I originally integrated the triplet loss function in the main PyTorch repository to help to reproduce \cite{BalntasBMVC2016}.
-\item \textbf{KeyNet:} Code to reproduce the results presented in \cite{barroso2019keynet}.\\
+\item \textbf{TripletLoss:} Python code that implement the margin and the ratio triplet losses in PyTorch from~\cite{BalntasBMVC2016}. I originally integrated the triplet loss function in the main PyTorch repository.
+\item \textbf{KeyNet:} Python repository to reproduce the results presented in~\cite{barroso2019keynet}. I co-maintain the repository with the other authors.\\
 URL: \url{https://github.com/axelBarroso/Key.Net}.
 \end{itemize}
 
 \section{Scientific Dissemination}
 
+In the following there is a list the different talks at conferences and tutorials, appearances in the media and internships and research stays that I have achieved during these years:
+
 \subsection{Invited Talks and Tutorials}
+
 \begin{itemize}
-\item \textbf{Edgar Riba}, Mona Fathollahi, Wesley Chaney, Ethan Rublee and Gary Bradski. torchgeometry: when PyTorch meets geometry. In \textit{PyTorch Developer Conference Poster Session}, 2028
+\item \textbf{Edgar Riba}, Mona Fathollahi, Wesley Chaney, Ethan Rublee and Gary Bradski. torchgeometry: when PyTorch meets geometry. In \textit{PyTorch Developer Conference Poster Session}, 2018
 \item Vassileios Balntas, Dmytro Mishkin, \textbf{Edgar Riba}. Local Features: From SIFT to Differentiable Methods. In, \textit{CVPR 2020 Tutorial}.
-\item Organizer: \textit{Kornia Hackathon 2019}.\\
-Satellite event of Deep Learning Symposium BCN 2019.
-\item \textit{Differentiable Computer Vision: an introduction to Kornia}.\\
-\textbf{WACV 2020 Tutorial}.
-\item \textit{Differentiable Computer Vision: an introduction to Kornia}.\\
-\textbf{GDG Spain 2020, Youtube podcast}.
-\item \textit{Differentiable Computer Vision: an introduction to Kornia}.\\
-\textbf{Nvidia GTC 2020}.
-\item \textit{Differentiable Computer Vision: an introduction to Kornia}.\\
-\textbf{IRI Robotics and AI Summer School 2020}.
-\item \textit{Differentiable Computer Vision: an introduction to Kornia}.\\
-\textbf{PyBCN 2020}.
+\item  \textbf{Edgar Riba} (Organizer). Kornia Hackathon 2019. \textit{Satellite event of Deep Learning Symposium BCN 2019}.
+\item \textbf{Edgar Riba}. Differentiable Computer Vision: an introduction to Kornia. \textit{WACV 2020 Tutorial}.
+\item \textbf{Edgar Riba}. Differentiable Computer Vision: an introduction to Kornia. \textit{GDG Spain 2020, Youtube podcast}.
+\item \textbf{Edgar Riba}. Differentiable Computer Vision: an introduction to Kornia. \textit{Nvidia GTC 2020}.
+\item \textbf{Edgar Riba}. Differentiable Computer Vision: an introduction to Kornia. \textit{IRI Robotics and AI Summer School 2020}.
+\item \textbf{Edgar Riba}. Differentiable Computer Vision: an introduction to Kornia. \textit{PyBCN 2020}.
 \end{itemize}
 
 \subsection{In the Media}
+
+The appearances in the social media and news to divulge the work done in this thesis:
+
 \begin{itemize}
 \item \textit{How a research scientist built Kornia: an open source differentiable library for PyTorch}. Medium, PyTorch, 2019.
 \item \textit{Kornia: an Open Source Differentiable Computer Vision Library for PyTorch}. OpenCV Blog, 2020.
@@ -81,20 +83,29 @@ Satellite event of Deep Learning Symposium BCN 2019.
 \end{itemize}
 
 \subsection{Internships}
+
+The internships and research stays carried out that lead to some of the publications presented during the thesis:\\
+
 \begin{itemize}
 \item Arraiy, Mountain View, CA, USA.\\
-\textit{Host:} Dr. Gary Bradski
+\textit{Host:} Dr. Gary Bradski\\
+\textit{Date:} April 2017-November 2017\\
 \item Imperial College London, UK.\\
-\textit{Host:} Dr. Krystian Mikolajzcyk
-\item Institut de Robotica Industrial de Barcelona, Barcelona, ES.\\
-\textit{Host:} Dr. Francesc Moreno-Noguer.
+\textit{Host:} Dr. Krystian Mikolajzcyk\\
+\textit{Date:} June 2018-November 2018\\
+\item Institut de Robotica Industrial de Barcelona, Barcelona, ES. \\
+\textit{Host:} Dr. Francesc Moreno-Noguer.\\
+\textit{Date:} September 2019-Present\\
 \end{itemize}
 
 \subsection{Community}
+
+List of open source affiliations derived of the work in this thesis:\\
+
 \begin{itemize}
-\item Kornia.org Founder/CEO
-\item Active member of the PyTorch community
-\item Technical Committee Member at OpenCV.org
-\item Google Summer of Code Mentor at OpenCV
-\item Google Summer of Code Student at OpenCV
+\item Kornia.org Projet Leader, 2018-Present.
+\item Active member of the PyTorch community, 2016-Present.
+\item Technical Committee Member at OpenCV.org, 2018-Present.
+\item Google Summer of Code Mentor at OpenCV, Summer [2017, 2018, 2019, 2020].
+\item Google Summer of Code Student at OpenCV, Summer 2016.
 \end{itemize}
