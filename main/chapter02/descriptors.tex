@@ -26,7 +26,7 @@ descriptors~\cite{Calonder:2010:BBR:1888089.1888148}, optimised
 descriptor parameters \cite{WHB09,simonyan2014learning} which have
 made a significant and wide impact in various computer vision tasks.
 Recently end-to-end learnt
-descriptors~\cite{FDB14,simo2015deepdesc,ZagoruykoCVPR2015,Han_2015_CVPR}
+descriptors~\cite{fischer2015descriptor,simo2015deepdesc,ZagoruykoCVPR2015,Han_2015_CVPR}
 based on CNN architectures and training on a large dataset of positive
 and negative sample pairs, were demonstrated to significantly
 outperform state of the art features. This was a natural adoption of
@@ -72,10 +72,10 @@ metrics \cite{BHW10,simonyan2014learning} for better matching.
 
 End-to-end learning of patch descriptors using CNN has been attempted
 in several works
-\cite{FDB14,ZagoruykoCVPR2015,simo2015deepdesc,Han_2015_CVPR} and
+\cite{fischer2015descriptor,ZagoruykoCVPR2015,simo2015deepdesc,Han_2015_CVPR} and
 consistent improvements were reported over the state of the art
 descriptors.  Interest in the field started from results shown in
-\cite{FDB14} that the features from the last layer of a convolutional
+\cite{fischer2015descriptor} that the features from the last layer of a convolutional
 deep network trained on ImageNet \cite{ILSVRC15} can outperform
 SIFT. This was a significant result, since the convolutional features
 from ImageNet were not specifically learnt for such local
@@ -434,7 +434,7 @@ since it also includes a similarity metric layer  trained on top of the feature 
                                     & \multicolumn{2}{c}{22.53} &
                                                                   26.55
   \\
-   {\small ImageNet$_{4conv}$} \cite{FDB14} & 128 & \multicolumn{2}{c}{30.22} & \multicolumn{2}{c}{14.26}
+   {\small ImageNet$_{4conv}$} \cite{fischer2015descriptor} & 128 & \multicolumn{2}{c}{30.22} & \multicolumn{2}{c}{14.26}
                                     & \multicolumn{2}{c}{9.64} & 18.04
                                                                    \\
     {\small ConvexOpt} \cite{simonyan2014learning} & 80 & 10.08 & 11.63
@@ -483,7 +483,7 @@ the descriptors extracted from an image to 1K, which is important to
 avoid bias by different numbers of features in different images. For
 all the experiments below, the descriptors are trained on the  Liberty dataset with patches extracted using the DoG detector~\cite{BHW10}.
 
-For the testing the nearest neighbor matching benchmark two datasets are mainly used in the literature, {\em Oxford matching dataset} \cite{schmid2003performance}, which is of small size, but include images acquired by a camera, and the {\em generated matching dataset} \cite{FDB14} which is much larger in volume but created synthetically. In the following sections, we discuss our testing results in those two datasets.
+For the testing the nearest neighbor matching benchmark two datasets are mainly used in the literature, {\em Oxford matching dataset} \cite{schmid2003performance}, which is of small size, but include images acquired by a camera, and the {\em generated matching dataset} \cite{fischer2015descriptor} which is much larger in volume but created synthetically. In the following sections, we discuss our testing results in those two datasets.
 
 \begin{figure}
 \centering    
@@ -528,12 +528,11 @@ Figure~\ref{fig:fischer_results} shows the results across various synthetic tran
 \includegraphics[trim={0.22cm 2.6cm 0.22cm 2.6cm},width=\textwidth]{main/chapter02/images/fischer_dog}
 \includegraphics[trim={0.22cm 3cm 0.22cm 3cm},width=\textwidth]{main/chapter02/images/fischer_haraff}
 \caption[Keypoint image matching results with synthetic dataset]{\textbf{Keypoint image matching results with synthetic dataset}. Evaluation on the generated-matching dataset
-  \cite{FDB14}, for two different types of feature
+  \cite{fischer2015descriptor}, for two different types of feature
   extractors, DoG and  HarrisAffine.}
 \label{fig:fischer_results}
 \vspace{-0.2cm}
 \end{figure}
-
 
 \subsubsection{Efficiency}
 One of the main motivations behind this work, was the need for a fast
